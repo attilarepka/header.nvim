@@ -42,43 +42,43 @@ local function create_autocmds()
     end, { complete = "file", nargs = "?", bang = true })
 
     vim.api.nvim_create_user_command("AddLicenseAGPL3", function()
-        add_header("agpl3-header")
+        add_license_header("agpl3")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseAPACHE", function()
-        add_header("apache-header")
+        add_license_header("apache")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseBSD2", function()
-        add_header("bsd2")
+        add_license_header("bsd2")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseBSD3", function()
-        add_header("bsd3")
+        add_license_header("bsd3")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseCC0", function()
-        add_header("cc0-header")
+        add_license_header("cc0")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseGPL3", function()
-        add_header("gpl3-header")
+        add_license_header("gpl3")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseISC", function()
-        add_header("isc")
+        add_license_header("isc")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseMIT", function()
-        add_header("mit")
+        add_license_header("mit")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseMPL", function()
-        add_header("mpl-header")
+        add_license_header("mpl")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseUNLICENSE", function()
-        add_header("unlicense")
+        add_license_header("unlicense")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseWTFPL", function()
-        add_header("wtfpl-header")
+        add_license_header("wtfpl")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseX11", function()
-        add_header("x11")
+        add_license_header("x11")
     end, { complete = "file", nargs = "?", bang = true })
     vim.api.nvim_create_user_command("AddLicenseZLIB", function()
-        add_header("zlib")
+        add_license_header("zlib")
     end, { complete = "file", nargs = "?", bang = true })
 end
 
@@ -152,7 +152,7 @@ local filetype_table =
     ["r"] = lng.r,
 }
 
-function add_headers()
+local function add_headers()
     -- TODO: check first few lines with regexp and if header found,
     -- notify, and do not update
     local buffer = vim.api.nvim_get_current_buf()
@@ -183,13 +183,13 @@ local function string_to_table(str)
     return lines
 end
 
-function add_header(opts)
+local function add_license_header(opts)
     local buffer = vim.api.nvim_get_current_buf()
     local file_extension = vim.fn.expand('%:e')
 
     local fn = filetype_table[file_extension]
     if (fn) then
-        local license = require("licenses." .. opts)
+        local license = require("licenses." .. string.lower(opts))
         license = replace_token(license, "project", header.config.project)
         license = replace_token(license, "organization", header.config.author)
         license = replace_token(license, "year", os.date("%Y"))
@@ -202,12 +202,20 @@ function add_header(opts)
     end
 end
 
-header.execute = function()
+local function check_vim_version()
     if vim.version().minor < 8 then
         vim.notify_once("header.nvim: you must use neovim 0.8 or higher", vim.log.levels.ERROR)
         return
     end
+end
 
+header.add_license_header = function(opts)
+    check_vim_version()
+    add_license_header(opts)
+end
+
+header.add_headers = function()
+    check_vim_version()
     add_headers()
 end
 

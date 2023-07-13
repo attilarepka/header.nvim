@@ -58,6 +58,17 @@ require("header").setup({
 })
 ```
 
+To setup custom keybindings:
+
+```lua
+local header = require("header")
+
+vim.keymap.set("n", "<leader>hh", function() header.add_headers() end)
+-- provide add_header() method with supported license types
+-- handles licenses in case-insensitive way
+vim.keymap.set("n", "<leader>hm", function() header.add_license_header("mit") end)
+```
+
 ## Commands
 
 ### Adding Headers
@@ -79,6 +90,22 @@ require("header").setup({
 - `:AddLicenseWTFPL` Adds **WTFPL License**
 - `:AddLicenseX11` Adds **X11 License**
 - `:AddLicenseZLIB` Adds **ZLIB License**
+
+## Supported License Types
+
+- AGPL3
+- Apache
+- BSD2
+- BSD3
+- CC0
+- GPL3
+- ISC
+- MIT
+- MPL
+- Unlicense
+- WTFPL
+- X11
+- ZLIB
 
 ## Supported File Types
 
