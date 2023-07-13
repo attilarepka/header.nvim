@@ -64,8 +64,7 @@ To setup custom keybindings:
 local header = require("header")
 
 vim.keymap.set("n", "<leader>hh", function() header.add_headers() end)
--- provide add_header() method with supported license types
--- handles licenses in case-insensitive way
+-- see supported licenses below, method handles case-insensitively
 vim.keymap.set("n", "<leader>hm", function() header.add_license_header("mit") end)
 ```
 
