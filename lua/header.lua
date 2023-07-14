@@ -88,8 +88,8 @@ header.setup = function(params)
 end
 
 local function prepare_headers()
-    local file_name = vim.fn.expand('%:t')
-    local creation_date = vim.fn.getftime(vim.fn.expand('%'))
+    local file_name = vim.fn.expand("%:t")
+    local creation_date = vim.fn.getftime(vim.fn.expand("%"))
 
     -- Format modified_time as a human-readable string
     creation_date = os.date(header.config.date_created_fmt, creation_date)
@@ -116,8 +116,7 @@ local function prepare_headers()
     return headers
 end
 
-local filetype_table =
-{
+local filetype_table = {
     ["c"] = lng.cpp,
     ["cc"] = lng.cpp,
     ["cpp"] = lng.cpp,
@@ -156,10 +155,10 @@ local function add_headers()
     -- TODO: check first few lines with regexp and if header found,
     -- notify, and do not update
     local buffer = vim.api.nvim_get_current_buf()
-    local file_extension = vim.fn.expand('%:e')
+    local file_extension = vim.fn.expand("%:e")
 
     local fn = filetype_table[file_extension]
-    if (fn) then
+    if fn then
         local headers = prepare_headers()
         local comments = fn()
         local commented_headers = comment_headers(headers, comments)
@@ -185,10 +184,10 @@ end
 
 local function add_license_header(opts)
     local buffer = vim.api.nvim_get_current_buf()
-    local file_extension = vim.fn.expand('%:e')
+    local file_extension = vim.fn.expand("%:e")
 
     local fn = filetype_table[file_extension]
-    if (fn) then
+    if fn then
         local license = require("licenses." .. string.lower(opts))
         license = replace_token(license, "project", header.config.project)
         license = replace_token(license, "organization", header.config.author)

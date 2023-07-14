@@ -29,4 +29,3 @@ from {{ organization }}.
 ]]
 
 return license
-
