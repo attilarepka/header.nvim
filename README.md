@@ -144,3 +144,7 @@ vim.keymap.set("n", "<leader>hm", function() header.add_license_header("mit") en
 ## Contributing
 
 Open a GitHub issue or pull request.
+
+## License
+
+This project is licensed under the [MIT license](LICENSE)
