@@ -1,4 +1,6 @@
-local lng = require("languages.languages")
+local lng = require("languages")
+local filetype_table = require("filetypes")
+
 local header = {}
 
 header.config = {
@@ -14,6 +16,8 @@ header.config = {
 header.constants = {
     file_name = "File name:",
     date_created = "Date created:",
+    author = "Author:",
+    project = "Project:",
 }
 
 local function comment_headers(header_lines, comments)
@@ -96,16 +100,16 @@ local function prepare_headers()
 
     local headers = {}
     if header.config.file_name == true then
-        table.insert(headers, "File name: " .. file_name)
+        table.insert(headers, header.constants.file_name .. " " .. file_name)
     end
     if header.config.project ~= nil then
-        table.insert(headers, "Project: " .. header.config.project)
+        table.insert(headers, header.constants.project .. " " .. header.config.project)
     end
     if header.config.author ~= nil then
-        table.insert(headers, "Author: " .. header.config.author)
+        table.insert(headers, header.constants.author .. " " .. header.config.author)
     end
     if header.config.date_created ~= nil then
-        table.insert(headers, "Date Created: " .. creation_date)
+        table.insert(headers, header.constants.date_created .. " " .. creation_date)
     end
     if header.config.line_separator ~= nil then
         table.insert(headers, header.config.line_separator)
@@ -115,41 +119,6 @@ local function prepare_headers()
     end
     return headers
 end
-
-local filetype_table = {
-    ["c"] = lng.cpp,
-    ["cc"] = lng.cpp,
-    ["cpp"] = lng.cpp,
-    ["h"] = lng.cpp,
-    ["hh"] = lng.cpp,
-    ["hpp"] = lng.cpp,
-    ["py"] = lng.python,
-    ["robot"] = lng.python,
-    ["lua"] = lng.lua,
-    ["java"] = lng.java,
-    ["js"] = lng.javascript,
-    ["cs"] = lng.csharp,
-    ["swift"] = lng.swift,
-    ["rb"] = lng.ruby,
-    ["kt"] = lng.kotlin,
-    ["sc"] = lng.scala,
-    ["go"] = lng.go,
-    ["rs"] = lng.rust,
-    ["php"] = lng.php,
-    ["sh"] = lng.shell,
-    ["hs"] = lng.haskell,
-    ["lhs"] = lng.haskell,
-    ["pl"] = lng.perl,
-    ["ts"] = lng.typescript,
-    ["tsx"] = lng.typescript,
-    ["coffee"] = lng.coffeescript,
-    ["groovy"] = lng.groovy,
-    ["gvy"] = lng.groovy,
-    ["gy"] = lng.groovy,
-    ["gsh"] = lng.groovy,
-    ["dart"] = lng.dart,
-    ["r"] = lng.r,
-}
 
 local function add_headers()
     -- TODO: check first few lines with regexp and if header found,

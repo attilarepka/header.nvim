@@ -34,75 +34,103 @@ end)
 describe("add_headers", function()
     require("plenary.reload").reload_module("header", true)
     local header = require("header")
-    it("should insert headers to cpp file", function()
-        vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-        local file_name = "main.cc"
-        vim.fn.setline(1, file_name)
-        vim.api.nvim_buf_set_name(0, file_name)
+    local filetypes = require("filetypes")
+    it("should insert headers to file depending on file type", function()
+        for k, v in pairs(filetypes) do
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+            local file_name = "main." .. k
+            vim.fn.setline(1, file_name)
+            vim.api.nvim_buf_set_name(0, file_name)
 
-        header.add_headers()
+            header.add_headers()
 
-        local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+            local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-        local expected = {
-            "/*",
-            "* File name: " .. file_name,
-            "* ------",
-            "*/",
-            "",
-            file_name,
-        }
+            local comments = v()
+            local expected = {
+                comments.comment .. " " .. header.constants.file_name .. " " .. file_name,
+                comments.comment .. " ------",
+                "",
+                file_name,
+            }
 
-        local buffer_without_date = {}
-        for _, line in ipairs(buffer) do
-            if not line:match("^%* Date Created:") then
-                table.insert(buffer_without_date, line)
+            if comments.comment_start ~= nil then
+                expected = {
+                    comments.comment_start,
+                    comments.comment .. " " .. header.constants.file_name .. " " .. file_name,
+                    comments.comment .. " ------",
+                    comments.comment_end,
+                    "",
+                    file_name,
+                }
             end
-        end
 
-        assert.are.same(expected, buffer_without_date)
+            local buffer_without_date = {}
+            for _, line in ipairs(buffer) do
+                if not line:match("^%" .. comments.comment .. " " .. header.constants.date_created) then
+                    table.insert(buffer_without_date, line)
+                end
+            end
+
+            assert.are.same(expected, buffer_without_date)
+        end
     end)
     it("should insert additional brief information to header", function()
-        vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-        local file_name = "main.cc"
-        vim.fn.setline(1, file_name)
-        vim.api.nvim_buf_set_name(0, file_name)
+        for k, v in pairs(filetypes) do
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+            local file_name = "main." .. k
+            vim.fn.setline(1, file_name)
+            vim.api.nvim_buf_set_name(0, file_name)
 
-        local config = {
-            file_name = true,
-            author = "test_author",
-            project = "test_project",
-            date_created = true,
-            date_created_fmt = "%Y-%m-%d %H:%M:%S",
-            line_separator = "------",
-            copyright_text = "test_copyright",
-        }
-        header.setup(config)
+            local config = {
+                file_name = true,
+                author = "test_author",
+                project = "test_project",
+                date_created = true,
+                date_created_fmt = "%Y-%m-%d %H:%M:%S",
+                line_separator = "------",
+                copyright_text = "test_copyright",
+            }
+            header.setup(config)
 
-        header.add_headers()
+            header.add_headers()
 
-        local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+            local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-        local expected = {
-            "/*",
-            "* File name: " .. file_name,
-            "* Project: " .. config.project,
-            "* Author: " .. config.author,
-            "* ------",
-            "* " .. config.copyright_text,
-            "*/",
-            "",
-            file_name,
-        }
+            local comments = v()
+            local expected = {
+                comments.comment .. " File name: " .. file_name,
+                comments.comment .. " Project: " .. config.project,
+                comments.comment .. " Author: " .. config.author,
+                comments.comment .. " ------",
+                comments.comment .. " " .. config.copyright_text,
+                "",
+                file_name,
+            }
 
-        local buffer_without_date = {}
-        for _, line in ipairs(buffer) do
-            if not line:match("^%* Date Created:") then
-                table.insert(buffer_without_date, line)
+            if comments.comment_start ~= nil then
+                expected = {
+                    comments.comment_start,
+                    comments.comment .. " File name: " .. file_name,
+                    comments.comment .. " Project: " .. config.project,
+                    comments.comment .. " Author: " .. config.author,
+                    comments.comment .. " ------",
+                    comments.comment .. " " .. config.copyright_text,
+                    comments.comment_end,
+                    "",
+                    file_name,
+                }
             end
-        end
 
-        assert.are.same(expected, buffer_without_date)
+            local buffer_without_date = {}
+            for _, line in ipairs(buffer) do
+                if not line:match("^%" .. comments.comment .. " " .. header.constants.date_created) then
+                    table.insert(buffer_without_date, line)
+                end
+            end
+
+            assert.are.same(expected, buffer_without_date)
+        end
     end)
 end)
 
