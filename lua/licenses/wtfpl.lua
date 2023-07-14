@@ -7,4 +7,3 @@ for more details.
 ]]
 
 return license
-
