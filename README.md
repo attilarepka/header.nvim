@@ -4,7 +4,7 @@
 
 ## Demo
 
-[![Demo header.nvim](https://github.com/attilarepka/header.nvim/assets/39063661/8f5fe581-6b36-4ae1-b886-dad06badbffc)
+https://github.com/attilarepka/header.nvim/assets/39063661/2fa7f325-407a-42c1-9db5-75c138f4a6ea
 
 ## Prerequisites
 
