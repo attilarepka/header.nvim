@@ -1,4 +1,5 @@
 require("plenary.reload").reload_module("header", true)
+local header = require("header")
 
 local function get_buffer_without_date(buffer, comments, constants)
     result = {}
@@ -59,7 +60,9 @@ local function build_extended_expected_comments(file_name, comments, constants, 
 end
 
 describe("setup", function()
-    local header = require("header")
+    before_each(function()
+        header.reset()
+    end)
     it("setup with default configs", function()
         local expected = {
             file_name = true,
@@ -71,7 +74,7 @@ describe("setup", function()
             copyright_text = nil,
         }
         header.setup()
-        assert.are.same(header.config, expected)
+        assert.are.same(expected, header.config)
     end)
 
     it("setup with custom configs", function()
@@ -85,14 +88,15 @@ describe("setup", function()
             copyright_text = "test_copyright",
         }
         header.setup(expected)
-        assert.are.same(header.config, expected)
+        assert.are.same(expected, header.config)
     end)
 end)
 
 describe("add_headers", function()
+    before_each(function()
+        header.reset()
+    end)
     it("should insert headers to file depending on file type", function()
-        require("plenary.reload").reload_module("header", true)
-        local header = require("header")
         local filetypes = require("filetypes")
         for k, v in pairs(filetypes) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
@@ -114,8 +118,6 @@ describe("add_headers", function()
         end
     end)
     it("should insert headers via autocommand", function()
-        require("plenary.reload").reload_module("header", true)
-        local header = require("header")
         local filetypes = require("filetypes")
         for k, v in pairs(filetypes) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
@@ -137,8 +139,6 @@ describe("add_headers", function()
         end
     end)
     it("should insert additional brief information to header", function()
-        require("plenary.reload").reload_module("header", true)
-        local header = require("header")
         local filetypes = require("filetypes")
         for k, v in pairs(filetypes) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
@@ -148,12 +148,12 @@ describe("add_headers", function()
 
             local config = {
                 file_name = true,
-                author = "test_author",
-                project = "test_project",
+                author = "test_author_name",
+                project = "test_project_name",
                 date_created = true,
                 date_created_fmt = "%Y-%m-%d %H:%M:%S",
                 line_separator = "------",
-                copyright_text = "test_copyright",
+                copyright_text = "test_copyright_text",
             }
             header.setup(config)
 
@@ -170,8 +170,6 @@ describe("add_headers", function()
         end
     end)
     it("should update existing header files", function()
-        require("plenary.reload").reload_module("header", true)
-        local header = require("header")
         local filetypes = require("filetypes")
         for k, v in pairs(filetypes) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
@@ -208,8 +206,9 @@ describe("add_headers", function()
 end)
 
 describe("add_license_header", function()
-    require("plenary.reload").reload_module("header", true)
-    local header = require("header")
+    before_each(function()
+        header.reset()
+    end)
     it("should insert mit header to cpp file", function()
         local config = {
             author = "test_author",

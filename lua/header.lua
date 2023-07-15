@@ -211,8 +211,20 @@ local function create_autocmds()
 end
 
 header.setup = function(params)
-    header.config = vim.tbl_extend("force", {}, header.config, params or {})
+    header.config = vim.tbl_extend("force", header.config, params or {})
     create_autocmds()
+end
+
+header.reset = function()
+    header.config = {
+        file_name = true,
+        author = nil,
+        project = nil,
+        date_created = true,
+        date_created_fmt = "%Y-%m-%d %H:%M:%S",
+        line_separator = "------",
+        copyright_text = nil,
+    }
 end
 
 local function check_vim_version()
