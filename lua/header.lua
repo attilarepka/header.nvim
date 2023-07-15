@@ -66,9 +66,9 @@ end
 
 local function is_header_line(line, comments)
     if comments.comment_start ~= nil and comments.comment_end ~= nil then
-        return line:match("^%s-" .. escape_special_characters(comments.comment_start)) or
-            line:match("^%s-" .. escape_special_characters(comments.comment)) or
-            line:match("^%s-" .. escape_special_characters(comments.comment_end))
+        return line:match("^%s-" .. escape_special_characters(comments.comment_start))
+            or line:match("^%s-" .. escape_special_characters(comments.comment))
+            or line:match("^%s-" .. escape_special_characters(comments.comment_end))
     end
     return line:match("^%s-" .. escape_special_characters(comments.comment)) ~= nil
 end
