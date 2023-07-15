@@ -1,10 +1,16 @@
 # header.nvim
 
-**header.nvim is a Neovim plugin which adds brief author information and license headers to the top of the files.**
+**header.nvim is a Neovim plugin which adds or updates brief author information and license headers to the top of the files.**
 
 ## Demo
 
 https://github.com/attilarepka/header.nvim/assets/39063661/2fa7f325-407a-42c1-9db5-75c138f4a6ea
+
+## Features
+
+- Add new copyright header
+- Update existing copyright header
+- Add common licenses
 
 ## Prerequisites
 

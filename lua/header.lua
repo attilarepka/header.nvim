@@ -1,4 +1,3 @@
-local lng = require("languages")
 local filetype_table = require("filetypes")
 
 local header = {}
@@ -37,7 +36,132 @@ local function comment_headers(header_lines, comments)
     end
 
     table.insert(result, "")
+
     return result
+end
+
+local function replace_token(str, token, value)
+    local pattern = "{{%s*" .. token .. "%s*}}"
+    local result = string.gsub(str, pattern, value or "")
+    return result
+end
+
+local function string_to_table(str)
+    local lines = {}
+    for line in str:gmatch("[^\r\n]+") do
+        table.insert(lines, line)
+    end
+    return lines
+end
+
+local function escape_special_characters(pattern)
+    local special_chars = { "%", "^", "$", "(", ")", ".", "[", "]", "*", "+", "-", "?" }
+
+    for _, char in ipairs(special_chars) do
+        pattern = pattern:gsub("%" .. char, "%%" .. char)
+    end
+
+    return pattern
+end
+
+local function is_header_line(line, comments)
+    if comments.comment_start ~= nil and comments.comment_end ~= nil then
+        return line:match("^%s-" .. escape_special_characters(comments.comment_start))
+            or line:match("^%s-" .. escape_special_characters(comments.comment))
+            or line:match("^%s-" .. escape_special_characters(comments.comment_end))
+    end
+    return line:match("^%s-" .. escape_special_characters(comments.comment)) ~= nil
+end
+
+local function find_header_end(lines, comments)
+    local header_end = #lines
+
+    local is_header = true
+    for i = 1, #lines do
+        if is_header and not is_header_line(lines[i], comments) then
+            is_header = false
+            header_end = i - 1
+        end
+    end
+
+    -- if header found, trim the blank line
+    if header_end > 0 then
+        return header_end + 1
+    end
+
+    return header_end
+end
+
+local function remove_old_headers(comments)
+    local buffer = vim.api.nvim_get_current_buf()
+    local lines = vim.api.nvim_buf_get_lines(buffer, 0, 8, false)
+    local header_end = find_header_end(lines, comments)
+    vim.api.nvim_buf_set_lines(buffer, 0, header_end, false, {})
+end
+
+local function prepare_headers()
+    local file_name = vim.fn.expand("%:t")
+    local creation_date = vim.fn.getftime(vim.fn.expand("%"))
+
+    -- Format modified_time as a human-readable string
+    creation_date = os.date(header.config.date_created_fmt, creation_date)
+
+    local headers = {}
+    if header.config.file_name == true then
+        table.insert(headers, header.constants.file_name .. " " .. file_name)
+    end
+    if header.config.project ~= nil then
+        table.insert(headers, header.constants.project .. " " .. header.config.project)
+    end
+    if header.config.author ~= nil then
+        table.insert(headers, header.constants.author .. " " .. header.config.author)
+    end
+    if header.config.date_created ~= nil then
+        table.insert(headers, header.constants.date_created .. " " .. creation_date)
+    end
+    if header.config.line_separator ~= nil then
+        table.insert(headers, header.config.line_separator)
+    end
+    if header.config.copyright_text ~= nil then
+        table.insert(headers, header.config.copyright_text)
+    end
+
+    return headers
+end
+
+local function add_headers()
+    local file_extension = vim.fn.expand("%:e")
+
+    local fn = filetype_table[file_extension]
+    if fn then
+        local headers = prepare_headers()
+        local comments = fn()
+        remove_old_headers(comments)
+        local commented_headers = comment_headers(headers, comments)
+        local buffer = vim.api.nvim_get_current_buf()
+        vim.api.nvim_buf_set_lines(buffer, 0, 0, false, commented_headers)
+    else
+        print("Unsupported file type:", file_extension)
+    end
+end
+
+local function add_license_header(opts)
+    local buffer = vim.api.nvim_get_current_buf()
+    local file_extension = vim.fn.expand("%:e")
+
+    local fn = filetype_table[file_extension]
+    if fn then
+        local license = require("licenses." .. string.lower(opts))
+        license = replace_token(license, "project", header.config.project)
+        license = replace_token(license, "organization", header.config.author)
+        license = replace_token(license, "year", os.date("%Y"))
+        local license_table = string_to_table(license)
+        local comments = fn()
+        local commented_headers = comment_headers(license_table, comments)
+        vim.api.nvim_buf_set_lines(buffer, 0, 0, false, commented_headers)
+    else
+        print("Unsupported file type:", file_extension)
+    end
 end
 
 local function create_autocmds()
@@ -87,87 +211,20 @@ local function create_autocmds()
 end
 
 header.setup = function(params)
-    header.config = vim.tbl_extend("force", {}, header.config, params or {})
+    header.config = vim.tbl_extend("force", header.config, params or {})
     create_autocmds()
 end
 
-local function prepare_headers()
-    local file_name = vim.fn.expand("%:t")
-    local creation_date = vim.fn.getftime(vim.fn.expand("%"))
-
-    -- Format modified_time as a human-readable string
-    creation_date = os.date(header.config.date_created_fmt, creation_date)
-
-    local headers = {}
-    if header.config.file_name == true then
-        table.insert(headers, header.constants.file_name .. " " .. file_name)
-    end
-    if header.config.project ~= nil then
-        table.insert(headers, header.constants.project .. " " .. header.config.project)
-    end
-    if header.config.author ~= nil then
-        table.insert(headers, header.constants.author .. " " .. header.config.author)
-    end
-    if header.config.date_created ~= nil then
-        table.insert(headers, header.constants.date_created .. " " .. creation_date)
-    end
-    if header.config.line_separator ~= nil then
-        table.insert(headers, header.config.line_separator)
-    end
-    if header.config.copyright_text ~= nil then
-        table.insert(headers, header.config.copyright_text)
-    end
-    return headers
-end
-
-local function add_headers()
-    -- TODO: check first few lines with regexp and if header found,
-    -- notify, and do not update
-    local buffer = vim.api.nvim_get_current_buf()
-    local file_extension = vim.fn.expand("%:e")
-
-    local fn = filetype_table[file_extension]
-    if fn then
-        local headers = prepare_headers()
-        local comments = fn()
-        local commented_headers = comment_headers(headers, comments)
-        vim.api.nvim_buf_set_lines(buffer, 0, 0, false, commented_headers)
-    else
-        print("Unsupported file type:", file_extension)
-    end
-end
-
-local function replace_token(str, token, value)
-    local pattern = "{{%s*" .. token .. "%s*}}"
-    local result = string.gsub(str, pattern, value or "")
-    return result
-end
-
-local function string_to_table(str)
-    local lines = {}
-    for line in str:gmatch("[^\r\n]+") do
-        table.insert(lines, line)
-    end
-    return lines
-end
-
-local function add_license_header(opts)
-    local buffer = vim.api.nvim_get_current_buf()
-    local file_extension = vim.fn.expand("%:e")
-
-    local fn = filetype_table[file_extension]
-    if fn then
-        local license = require("licenses." .. string.lower(opts))
-        license = replace_token(license, "project", header.config.project)
-        license = replace_token(license, "organization", header.config.author)
-        license = replace_token(license, "year", os.date("%Y"))
-        local license_table = string_to_table(license)
-        local comments = fn()
-        local commented_headers = comment_headers(license_table, comments)
-        vim.api.nvim_buf_set_lines(buffer, 0, 0, false, commented_headers)
-    else
-        print("Unsupported file type:", file_extension)
-    end
+header.reset = function()
+    header.config = {
+        file_name = true,
+        author = nil,
+        project = nil,
+        date_created = true,
+        date_created_fmt = "%Y-%m-%d %H:%M:%S",
+        line_separator = "------",
+        copyright_text = nil,
+    }
 end
 
 local function check_vim_version()
