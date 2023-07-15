@@ -42,7 +42,7 @@ end
 
 local function create_autocmds()
     vim.api.nvim_create_user_command("AddHeader", function()
-        header.execute()
+        header.add_headers()
     end, { complete = "file", nargs = "?", bang = true })
 
     vim.api.nvim_create_user_command("AddLicenseAGPL3", function()
