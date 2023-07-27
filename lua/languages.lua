@@ -66,7 +66,7 @@ end
 languages.kotlin = function()
     local comments = {
         comment_start = "/*",
-        comment = "//",
+        comment = "*",
         comment_end = "*/",
     }
     return comments
@@ -74,7 +74,7 @@ end
 languages.scala = function()
     local comments = {
         comment_start = "/*",
-        comment = "//",
+        comment = "*",
         comment_end = "*/",
     }
     return comments
@@ -82,7 +82,7 @@ end
 languages.go = function()
     local comments = {
         comment_start = "/*",
-        comment = "//",
+        comment = "*",
         comment_end = "*/",
     }
     return comments
@@ -90,7 +90,7 @@ end
 languages.rust = function()
     local comments = {
         comment_start = "/*",
-        comment = "//",
+        comment = "*",
         comment_end = "*/",
     }
     return comments
@@ -98,7 +98,7 @@ end
 languages.php = function()
     local comments = {
         comment_start = "/*",
-        comment = "//",
+        comment = "*",
         comment_end = "*/",
     }
     return comments
@@ -130,7 +130,7 @@ end
 languages.typescript = function()
     local comments = {
         comment_start = "/*",
-        comment = "//",
+        comment = "*",
         comment_end = "*/",
     }
     return comments
@@ -146,7 +146,7 @@ end
 languages.groovy = function()
     local comments = {
         comment_start = "/*",
-        comment = "//",
+        comment = "*",
         comment_end = "*/",
     }
     return comments
@@ -154,7 +154,7 @@ end
 languages.dart = function()
     local comments = {
         comment_start = "/*",
-        comment = "//",
+        comment = "*",
         comment_end = "*/",
     }
     return comments
