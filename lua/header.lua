@@ -10,6 +10,8 @@ header.config = {
     date_created_fmt = "%Y-%m-%d %H:%M:%S",
     line_separator = "------",
     copyright_text = nil,
+    date_modified = false,
+    date_modified_fmt = "%Y-%m-%d %H:%M:%S",
 }
 
 header.constants = {
@@ -17,6 +19,7 @@ header.constants = {
     date_created = "Date created:",
     author = "Author:",
     project = "Project:",
+    date_modified = "Date modified:",
 }
 
 local function comment_headers(header_lines, comments)
@@ -125,6 +128,10 @@ local function prepare_headers()
     if header.config.copyright_text ~= nil then
         table.insert(headers, header.config.copyright_text)
     end
+    if header.config.date_modified then
+        local modified_date = os.date(header.config.date_modified_fmt)
+        table.insert(headers, header.constants.date_modified .. " " .. modified_date)
+    end
 
     return headers
 end
@@ -162,6 +169,22 @@ local function add_license_header(opts)
     else
         print("Unsupported file type:", file_extension)
     end
+end
+
+local function update_date_modified()
+    local buffer = vim.api.nvim_get_current_buf()
+    local lines = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)
+    local header_end = find_header_end(lines, comments) -- Assuming comments are defined or passed as a parameter
+    local modified_date = os.date(header.config.date_modified_fmt)
+
+    for i, line in ipairs(lines) do
+        if line:find(header.constants.date_modified) then
+            lines[i] = header.constants.date_modified .. " " .. modified_date
+            break
+        end
+    end
+
+    vim.api.nvim_buf_set_lines(buffer, 0, header_end, false, lines)
 end
 
 local function create_autocmds()
@@ -208,6 +231,9 @@ local function create_autocmds()
     vim.api.nvim_create_user_command("AddLicenseZLIB", function()
         add_license_header("zlib")
     end, { complete = "file", nargs = "?", bang = true })
+    vim.api.nvim_create_user_command("UpdateDateModified", function()
+        update_date_modified()
+    end, { bang = true })
 end
 
 header.setup = function(params)
