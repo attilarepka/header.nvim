@@ -8,10 +8,10 @@ header.config = {
     project = nil,
     date_created = true,
     date_created_fmt = "%Y-%m-%d %H:%M:%S",
+    date_modified = true,
+    date_modified_fmt = "%Y-%m-%d %H:%M:%S",
     line_separator = "------",
     copyright_text = nil,
-    date_modified = false,
-    date_modified_fmt = "%Y-%m-%d %H:%M:%S",
 }
 
 header.constants = {
@@ -122,15 +122,15 @@ local function prepare_headers()
     if header.config.date_created ~= nil then
         table.insert(headers, header.constants.date_created .. " " .. creation_date)
     end
+    if header.config.date_modified then
+        local modified_date = os.date(header.config.date_modified_fmt)
+        table.insert(headers, header.constants.date_modified .. " " .. modified_date)
+    end
     if header.config.line_separator ~= nil then
         table.insert(headers, header.config.line_separator)
     end
     if header.config.copyright_text ~= nil then
         table.insert(headers, header.config.copyright_text)
-    end
-    if header.config.date_modified then
-        local modified_date = os.date(header.config.date_modified_fmt)
-        table.insert(headers, header.constants.date_modified .. " " .. modified_date)
     end
 
     return headers
@@ -171,7 +171,7 @@ local function add_license_header(opts)
     end
 end
 
-local function update_date_modified()
+function header.update_date_modified()
     local buffer = vim.api.nvim_get_current_buf()
     local lines = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)
     local header_end = find_header_end(lines, comments) -- Assuming comments are defined or passed as a parameter
