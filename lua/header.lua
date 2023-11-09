@@ -174,7 +174,11 @@ end
 function header.update_date_modified()
     local buffer = vim.api.nvim_get_current_buf()
     local lines = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)
-    local header_end = find_header_end(lines, comments) -- Assuming comments are defined or passed as a parameter
+    local file_extension = vim.fn.expand("%:e")
+    local comments = (filetype_table[file_extension] or function()
+        return { comment = "//" }
+    end)() -- This line fetches comment formatting or defaults to '//' if file type is not supported.
+    local header_end = find_header_end(lines, comments)
     local modified_date = os.date(header.config.date_modified_fmt)
 
     for i, line in ipairs(lines) do
