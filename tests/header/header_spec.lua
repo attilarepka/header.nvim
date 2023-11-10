@@ -1,10 +1,19 @@
 require("plenary.reload").reload_module("header", true)
 local header = require("header")
 
+local function get_modified_date(buffer)
+    for i, line in ipairs(buffer) do
+        if line:find(header.constants.date_modified) then
+            return buffer[i]
+        end
+    end
+end
+
 local function get_buffer_without_date(buffer, comments, constants)
     result = {}
     for _, line in ipairs(buffer) do
-        if not line:match("^%" .. comments.comment .. " " .. constants.date_created) then
+        if not line:match("^%" .. comments.comment .. " " .. constants.date_created)
+            and not line:match("^%" .. comments.comment .. " " .. constants.date_modified) then
             table.insert(result, line)
         end
     end
@@ -70,6 +79,8 @@ describe("setup", function()
             project = nil,
             date_created = true,
             date_created_fmt = "%Y-%m-%d %H:%M:%S",
+            date_modified = true,
+            date_modified_fmt = "%Y-%m-%d %H:%M:%S",
             line_separator = "------",
             copyright_text = nil,
         }
@@ -84,6 +95,8 @@ describe("setup", function()
             project = "test_project",
             date_created = true,
             date_created_fmt = "%Y-%m-%d %H:%M:%S",
+            date_modified = true,
+            date_modified_fmt = "%Y-%m-%d %H:%M:%S",
             line_separator = "------",
             copyright_text = "test_copyright",
         }
@@ -152,6 +165,8 @@ describe("add_headers", function()
                 project = "test_project_name",
                 date_created = true,
                 date_created_fmt = "%Y-%m-%d %H:%M:%S",
+                date_modified = true,
+                date_modified_fmt = "%Y-%m-%d %H:%M:%S",
                 line_separator = "------",
                 copyright_text = "test_copyright_text",
             }
@@ -187,6 +202,8 @@ describe("add_headers", function()
                 project = "test_project",
                 date_created = true,
                 date_created_fmt = "%Y-%m-%d %H:%M:%S",
+                date_modified = true,
+                date_modified_fmt = "%Y-%m-%d %H:%M:%S",
                 line_separator = "------",
                 copyright_text = "test_copyright",
             }
@@ -201,6 +218,57 @@ describe("add_headers", function()
             local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
 
             assert.are.same(expected, buffer_without_date)
+        end
+    end)
+end)
+
+describe("update_date_modified", function()
+    local os_module = package.loaded.os.date
+    function os_date(...)
+        return "1234-56-78 90:12:34"
+    end
+
+    before_each(function()
+        header.reset()
+    end)
+    after_each(function()
+        os.date = os_module
+    end)
+    it("should update existing header modified time", function()
+        local filetypes = require("filetypes")
+        for k, v in pairs(filetypes) do
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+            local file_name = "main." .. k
+            vim.fn.setline(1, file_name)
+            vim.api.nvim_buf_set_name(0, file_name)
+
+            local config = {
+                file_name = true,
+                author = "test_author",
+                project = "test_project",
+                date_created = true,
+                date_created_fmt = "%Y-%m-%d %H:%M:%S",
+                date_modified = true,
+                date_modified_fmt = "%Y-%m-%d %H:%M:%S",
+                line_separator = "------",
+                copyright_text = "test_copyright",
+            }
+            -- update config with extended stuff
+            header.setup(config)
+            header.add_headers()
+
+            buffer_old = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+            os.date = os_date -- override os.date
+
+            header.update_date_modified()
+            buffer_updated = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+            assert.are_not.equal(buffer_old, buffer_updated)
+
+            modified_date = get_modified_date(buffer_updated)
+            assert.is_true(string.find(modified_date, os.date(), 0, true) > 0)
+            break
         end
     end)
 end)

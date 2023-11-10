@@ -2,6 +2,8 @@ local filetype_table = require("filetypes")
 
 local header = {}
 
+header.header_size = 9
+
 header.config = {
     file_name = true,
     author = nil,
@@ -97,9 +99,15 @@ end
 
 local function remove_old_headers(comments)
     local buffer = vim.api.nvim_get_current_buf()
-    local lines = vim.api.nvim_buf_get_lines(buffer, 0, 8, false)
+    local lines = vim.api.nvim_buf_get_lines(buffer, 0, header.header_size, false)
     local header_end = find_header_end(lines, comments)
     vim.api.nvim_buf_set_lines(buffer, 0, header_end, false, {})
+end
+
+local function get_header_lines(buffer, comments)
+    local max_header_lines = vim.api.nvim_buf_get_lines(buffer, 0, header.header_size, false)
+    local header_end = find_header_end(max_header_lines, comments)
+    return vim.api.nvim_buf_get_lines(buffer, 0, header_end, false)
 end
 
 local function prepare_headers()
@@ -110,7 +118,7 @@ local function prepare_headers()
     creation_date = os.date(header.config.date_created_fmt, creation_date)
 
     local headers = {}
-    if header.config.file_name == true then
+    if header.config.file_name then
         table.insert(headers, header.constants.file_name .. " " .. file_name)
     end
     if header.config.project ~= nil then
@@ -119,7 +127,7 @@ local function prepare_headers()
     if header.config.author ~= nil then
         table.insert(headers, header.constants.author .. " " .. header.config.author)
     end
-    if header.config.date_created ~= nil then
+    if header.config.date_created then
         table.insert(headers, header.constants.date_created .. " " .. creation_date)
     end
     if header.config.date_modified then
@@ -171,29 +179,18 @@ local function add_license_header(opts)
     end
 end
 
-function header.update_date_modified()
+local function update_date_modified()
     local buffer = vim.api.nvim_get_current_buf()
     local file_extension = vim.fn.expand("%:e")
-    local comments = filetype_table[file_extension]() -- Retrieve the comment style for the current file type
-    local lines = vim.api.nvim_buf_get_lines(buffer, 0, 8, false)
+    local comments = filetype_table[file_extension]()
+    local lines = get_header_lines(buffer, comments)
 
-    -- First, determine if there is a header by looking for the "Date created" line
-    local has_header = false
-    for _, line in ipairs(lines) do
-        if line:find(header.constants.date_created) then
-            has_header = true
-            break
-        end
-    end
-
-    -- If a header is found, then proceed to update the "Date modified" line
-    if has_header then
+    if #lines > 0 and header.config.date_modified then
         local header_end = find_header_end(lines, comments)
         local modified_date = os.date(header.config.date_modified_fmt)
 
         for i, line in ipairs(lines) do
             if line:find(header.constants.date_modified) then
-                -- Update the "Date modified" line with the new date and the comment syntax
                 lines[i] = comments.comment .. " " .. header.constants.date_modified .. " " .. modified_date
                 break
             end
@@ -265,6 +262,8 @@ header.reset = function()
         project = nil,
         date_created = true,
         date_created_fmt = "%Y-%m-%d %H:%M:%S",
+        date_modified = true,
+        date_modified_fmt = "%Y-%m-%d %H:%M:%S",
         line_separator = "------",
         copyright_text = nil,
     }
@@ -285,6 +284,10 @@ end
 header.add_headers = function()
     check_vim_version()
     add_headers()
+end
+
+header.update_date_modified = function()
+    update_date_modified()
 end
 
 return header
