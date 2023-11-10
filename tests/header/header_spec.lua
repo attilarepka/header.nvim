@@ -271,6 +271,21 @@ describe("update_date_modified", function()
             break
         end
     end)
+
+    it("should not modify the buffer if there is no header", function()
+        -- Setup a buffer without a header
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, { "Line 1", "Line 2", "Line 3" })
+        local initial_buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+        -- Call update_date_modified
+        header.update_date_modified()
+
+        -- Get the buffer after the update
+        local updated_buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+        -- Verify that the buffer has not changed
+        assert.are.same(initial_buffer, updated_buffer)
+    end)
 end)
 
 describe("add_license_header", function()
