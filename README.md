@@ -1,6 +1,7 @@
 # header.nvim
 
-**header.nvim is a Neovim plugin which adds or updates brief author information and license headers to the top of the files.**
+**header.nvim is a Neovim plugin which adds or updates brief author information
+and license headers to the top of the files.**
 
 ## Demo
 
@@ -41,6 +42,8 @@ The script comes with the following defaults:
     project = nil,
     date_created = true,
     date_created_fmt = "%Y-%m-%d %H:%M:%S",
+    date_modified = true,
+    date_modified_fmt = "%Y-%m-%d %H:%M:%S",
     line_separator = "------",
     copyright_text = nil,
 }
@@ -63,6 +66,8 @@ require("header").setup({
     project = "header.nvim",
     date_created = true,
     date_created_fmt = "%Y-%m-%d %H:%M:%S",
+    date_modified = true,
+    date_modified_fmt = "%Y-%m-%d %H:%M:%S",
     line_separator = "------",
     copyright_text = "Copyright 2023",
 })
@@ -99,6 +104,29 @@ vim.keymap.set("n", "<leader>hm", function() header.add_license_header("mit") en
 - `:AddLicenseWTFPL` Adds **WTFPL License**
 - `:AddLicenseX11` Adds **X11 License**
 - `:AddLicenseZLIB` Adds **ZLIB License**
+
+### Autocommand for update date modified when saving a file
+
+```lua
+local augroup = vim.api.nvim_create_augroup
+local autocmd = vim.api.nvim_create_autocmd
+
+augroup("mygroup", { clear = true })
+
+autocmd("BufWritePre", {
+    pattern = "*",
+    callback = function()
+        local header = require("header")
+        if header and header.update_date_modified then
+            header.update_date_modified()
+        else
+            vim.notify_once("header.update_date_modified is not available", vim.log.levels.WARN)
+        end
+    end,
+    group = "mygroup",
+    desc = "Update header's date modified",
+})
+```
 
 ## Supported License Types
 
