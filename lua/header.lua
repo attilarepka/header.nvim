@@ -182,6 +182,11 @@ end
 local function update_date_modified()
     local buffer = vim.api.nvim_get_current_buf()
     local file_extension = vim.fn.expand("%:e")
+    -- Check if the file extension is in the filetype_table
+    if not filetype_table[file_extension] then
+        vim.notify("File type not supported for updating header", vim.log.levels.WARN)
+        return
+    end
     local comments = filetype_table[file_extension]()
     local lines = get_header_lines(buffer, comments)
 
