@@ -12,8 +12,10 @@ end
 local function get_buffer_without_date(buffer, comments, constants)
     result = {}
     for _, line in ipairs(buffer) do
-        if not line:match("^%" .. comments.comment .. " " .. constants.date_created)
-            and not line:match("^%" .. comments.comment .. " " .. constants.date_modified) then
+        if
+            not line:match("^%" .. comments.comment .. " " .. constants.date_created)
+            and not line:match("^%" .. comments.comment .. " " .. constants.date_modified)
+        then
             table.insert(result, line)
         end
     end
@@ -285,6 +287,25 @@ describe("update_date_modified", function()
 
         -- Verify that the buffer has not changed
         assert.are.same(initial_buffer, updated_buffer)
+    end)
+
+    it("should not run for unsupported file extensions", function()
+        -- Setup a buffer with an unsupported file extension
+        local unsupported_extension = "unsupported_ext"
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, { "Line 1", "Line 2", "Line 3" })
+        local file_name = "test_file." .. unsupported_extension
+        vim.fn.setline(1, file_name)
+        vim.api.nvim_buf_set_name(0, file_name)
+
+        -- Call update_date_modified
+        local header = require("header")
+        header.update_date_modified()
+
+        -- Get the buffer after the update
+        local updated_buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+        -- Verify that the buffer has not changed
+        assert.are.same({ "Line 1", "Line 2", "Line 3" }, updated_buffer)
     end)
 end)
 
