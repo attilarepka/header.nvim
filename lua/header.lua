@@ -184,7 +184,7 @@ local function update_date_modified()
     local file_extension = vim.fn.expand("%:e")
     -- Check if the file extension is in the filetype_table
     if not filetype_table[file_extension] then
-        vim.notify("File type not supported for updating header", vim.log.levels.WARN)
+        -- vim.notify("File type not supported for updating header", vim.log.levels.WARN)
         return
     end
     local comments = filetype_table[file_extension]()
