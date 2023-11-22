@@ -1,0 +1,10 @@
+name: check pr title
+on:
+pull_request:
+types: [opened, edited]
+
+steps:
+  - uses: Slashgear/action-check-pr-title@v4.3.0
+    with:
+      regexp: "(chore|docs|feat|fix|refactor|test): .++" # Regex the title should match.
+      helpMessage: "Example: 'feat: example of title'"
