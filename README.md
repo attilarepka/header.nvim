@@ -3,7 +3,7 @@
 **header.nvim is a Neovim plugin which adds or updates brief author information
 and license headers to the top of the files.**
 
-[![Build status](https://github.com/attilarepka/header.nvim/actions/workflows/default.yml/badge.svg)](https://github.com/attilarepka/header.nvim/actions)
+[![Build status](https://github.com/attilarepka/header.nvim/actions/workflows/tests.yml/badge.svg)](https://github.com/attilarepka/header.nvim/actions)
 
 ## Demo
 
