@@ -3,6 +3,8 @@
 **header.nvim is a Neovim plugin which adds or updates brief author information
 and license headers to the top of the files.**
 
+[![Build status](https://github.com/attilarepka/header.nvim/actions/workflows/tests.yml/badge.svg)](https://github.com/attilarepka/header.nvim/actions)
+
 ## Demo
 
 https://github.com/attilarepka/header.nvim/assets/39063661/2fa7f325-407a-42c1-9db5-75c138f4a6ea
@@ -128,60 +130,9 @@ autocmd("BufWritePre", {
 })
 ```
 
-## Supported License Types
-
-- AGPL3
-- Apache
-- BSD2
-- BSD3
-- CC0
-- GPL3
-- ISC
-- MIT
-- MPL
-- Unlicense
-- WTFPL
-- X11
-- ZLIB
-
-## Supported File Types
-
-- c
-- cc
-- cpp
-- h
-- hh
-- hpp
-- py
-- robot
-- lua
-- java
-- js
-- cs
-- swift
-- rb
-- kt
-- sc
-- go
-- rs
-- php
-- sh
-- hs
-- lhs
-- pl
-- ts
-- tsx
-- coffee
-- groovy
-- gvy
-- gy
-- gsh
-- dart
-- r
-
 ## Contributing
 
-Open a GitHub issue or pull request.
+Contributions are welcome! Open a GitHub issue or pull request.
 
 ## License
 
