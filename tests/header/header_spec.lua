@@ -327,9 +327,10 @@ describe("add_license_header", function()
 
         local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
+        local current_year = os.date("%Y")
         local expected = {
             "/*",
-            "* Copyright (c) 2024 " .. config.author,
+            "* Copyright (c) " .. current_year .. " " .. config.author,
             "* Permission is hereby granted, free of charge, to any person obtaining a copy",
             '* of this software and associated documentation files (the "Software"), to deal',
             "* in the Software without restriction, including without limitation the rights",
