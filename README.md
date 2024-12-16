@@ -1,7 +1,6 @@
 # header.nvim
 
-**header.nvim is a Neovim plugin which adds or updates brief author information
-and license headers to the top of the files.**
+**A Neovim plugin to add or update author and license headers in your files.**
 
 [![Build status](https://github.com/attilarepka/header.nvim/actions/workflows/tests.yml/badge.svg)](https://github.com/attilarepka/header.nvim/actions)
 
@@ -13,7 +12,7 @@ https://github.com/attilarepka/header.nvim/assets/39063661/2fa7f325-407a-42c1-9d
 
 - Add new copyright header
 - Update existing copyright header
-- Add common licenses
+- Add common licenses, see [here](#adding-licenses)
 
 ## Prerequisites
 
@@ -132,7 +131,7 @@ autocmd("BufWritePre", {
 
 ## Contributing
 
-Contributions are welcome! Open a GitHub issue or pull request.
+Contributions are welcome! Open a GitHub [Issue](https://github.com/attilarepka/header.nvim/issues/new/choose) or [Pull request](https://github.com/attilarepka/header.nvim/pulls).
 
 ## License
 
