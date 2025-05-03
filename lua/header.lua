@@ -196,7 +196,14 @@ local function update_date_modified()
 
         for i, line in ipairs(lines) do
             if line:find(header.constants.date_modified) then
-                lines[i] = comments.comment .. " " .. header.constants.date_modified .. " " .. modified_date
+                local comment_start = line:find(comments.comment)
+                local line_beginning = line:sub(1, comment_start - 1)
+                lines[i] = line_beginning
+                    .. comments.comment
+                    .. " "
+                    .. header.constants.date_modified
+                    .. " "
+                    .. modified_date
                 break
             end
         end
