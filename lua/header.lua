@@ -99,9 +99,16 @@ end
 
 local function remove_old_headers(comments)
     local buffer = vim.api.nvim_get_current_buf()
-    local lines = vim.api.nvim_buf_get_lines(buffer, 0, header.header_size, false)
+    local total_lines = vim.api.nvim_buf_line_count(buffer)
+    if total_lines == 0 then
+        return
+    end
+
+    local lines = vim.api.nvim_buf_get_lines(buffer, 0, math.min(header.header_size, total_lines), false)
     local header_end = find_header_end(lines, comments)
-    vim.api.nvim_buf_set_lines(buffer, 0, header_end, false, {})
+    if header_end and header_end > 0 then
+        vim.api.nvim_buf_set_lines(buffer, 0, header_end, false, {})
+    end
 end
 
 local function get_header_lines(buffer, comments)
