@@ -269,8 +269,40 @@ local function create_autocmds()
     end, { complete = "file", nargs = "?", bang = true })
 end
 
+local function read_config_file()
+    local config_file = io.open("header.config", "r")
+    if not config_file then
+        return nil
+    end
+
+    local config_content = config_file:read("*a")
+    config_file:close()
+
+    if not config_content then
+        return nil
+    end
+
+    -- Parse configuration content
+    local program = loadstring(config_content)
+    if not program then
+        return nil
+    end
+
+    return program()
+end
+
 header.setup = function(params)
+    -- Read the project configuration file
+    local file_config = read_config_file()
+
+    -- Override header config with params passed to setup
     header.config = vim.tbl_extend("force", header.config, params or {})
+
+    -- Override the default configuration with the project's configuration
+    if file_config then
+        header.config = vim.tbl_extend("force", header.config, file_config)
+    end
+
     create_autocmds()
 end
 
