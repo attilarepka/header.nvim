@@ -58,19 +58,19 @@ require("header").setup({
 })
 ```
 
-The default configuration can be overwritten by a local project `header.config` file with the following format:
+The default configuration can be overwritten by a local project `.header.nvim` file with the following format:
 
-```lua
-return {
-    file_name = true,
-    author = "Your Name",
-    project = "Your Project",
-    date_created = true,
-    date_created_fmt = "%Y-%m-%d %H:%M:%S",
-    date_modified = true,
-    date_modified_fmt = "%Y-%m-%d %H:%M:%S",
-    line_separator = "------",
-    copyright_text = "Copyright (c) 2023 Your Name",
+```json
+{
+  "file_name": true,
+  "author": "Your Name",
+  "project": "Your Project",
+  "date_created": true,
+  "date_created_fmt": "%Y-%m-%d %H:%M:%S",
+  "date_modified": true,
+  "date_modified_fmt": "%Y-%m-%d %H:%M:%S",
+  "line_separator": "------",
+  "copyright_text": "Copyright (c) 2023 Your Name"
 }
 ```
 

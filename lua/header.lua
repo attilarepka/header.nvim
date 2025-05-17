@@ -270,25 +270,19 @@ local function create_autocmds()
 end
 
 local function read_config_file()
-    local config_file = io.open("header.config", "r")
-    if not config_file then
+    local header_file = io.open(".header.nvim", "r")
+    if not header_file then
         return nil
     end
 
-    local config_content = config_file:read("*a")
-    config_file:close()
+    local header_file_content = header_file:read("*a")
+    header_file:close()
 
-    if not config_content then
+    if not header_file_content or header_file_content == "" then
         return nil
     end
 
-    -- Parse configuration content
-    local program = loadstring(config_content)
-    if not program then
-        return nil
-    end
-
-    return program()
+    return vim.fn.json_decode(header_file_content)
 end
 
 header.setup = function(params)
