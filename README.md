@@ -1,18 +1,16 @@
 # header.nvim
 
-**A Neovim plugin to add or update author and license headers in your files.**
+**Fast, minimal Neovim plugin to automatically add or update copyright and license headers in any programming language.**
 
-[![Build status](https://github.com/attilarepka/header.nvim/actions/workflows/tests.yml/badge.svg)](https://github.com/attilarepka/header.nvim/actions)
-
-## Demo
-
-https://github.com/attilarepka/header.nvim/assets/39063661/2fa7f325-407a-42c1-9db5-75c138f4a6ea
+![header.nvim demo](vhs/demo.gif)
 
 ## Features
 
 - Add new copyright header
 - Update existing copyright header
 - Add common licenses, see [here](#adding-licenses)
+- Project specific configuration, see [here](#project-specific-configuration)
+- Keybindings, see [here](#keybindings)
 
 ## Prerequisites
 
@@ -50,28 +48,14 @@ The script comes with the following defaults:
 }
 ```
 
+### Override configuration
+
 To override the custom configuration, call:
 
 ```lua
 require("header").setup({
   -- your override config
 })
-```
-
-The default configuration can be overwritten by a local project `.header.nvim` file with the following format:
-
-```json
-{
-  "file_name": true,
-  "author": "Your Name",
-  "project": "Your Project",
-  "date_created": true,
-  "date_created_fmt": "%Y-%m-%d %H:%M:%S",
-  "date_modified": true,
-  "date_modified_fmt": "%Y-%m-%d %H:%M:%S",
-  "line_separator": "------",
-  "copyright_text": "Copyright (c) 2023 Your Name"
-}
 ```
 
 Example:
@@ -89,6 +73,26 @@ require("header").setup({
     copyright_text = "Copyright 2023",
 })
 ```
+
+### Project specific configuration
+
+The default configuration can be overwritten by a local project `.header.nvim` file with the following format:
+
+```json
+{
+  "file_name": true,
+  "author": "Your Name",
+  "project": "Your Project",
+  "date_created": true,
+  "date_created_fmt": "%Y-%m-%d %H:%M:%S",
+  "date_modified": true,
+  "date_modified_fmt": "%Y-%m-%d %H:%M:%S",
+  "line_separator": "------",
+  "copyright_text": "Copyright (c) 2023 Your Name"
+}
+```
+
+### Keybindings
 
 To setup custom keybindings:
 
@@ -122,7 +126,7 @@ vim.keymap.set("n", "<leader>hm", function() header.add_license_header("mit") en
 - `:AddLicenseX11` Adds **X11 License**
 - `:AddLicenseZLIB` Adds **ZLIB License**
 
-### Autocommand for update date modified when saving a file
+## Autocommand for update date modified when saving a file
 
 ```lua
 local augroup = vim.api.nvim_create_augroup
