@@ -1,0 +1,12 @@
+{
+  "file_name": true,
+  "author": "Your Name",
+  "project": "Your Project",
+  "date_created": true,
+  "date_created_fmt": "%Y-%m-%d %H:%M:%S",
+  "date_modified": true,
+  "date_modified_fmt": "%Y-%m-%d %H:%M:%S",
+  "line_separator": "------",
+  "copyright_text": "Copyright (c) 2023 Your Name",
+  "license_from_file": false
+}

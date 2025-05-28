@@ -85,6 +85,7 @@ describe("setup", function()
             date_modified_fmt = "%Y-%m-%d %H:%M:%S",
             line_separator = "------",
             copyright_text = nil,
+            license_from_file = false,
         }
         header.setup()
         assert.are.same(expected, header.config)
@@ -101,6 +102,7 @@ describe("setup", function()
             date_modified_fmt = "%Y-%m-%d %H:%M:%S",
             line_separator = "------",
             copyright_text = "test_copyright",
+            license_from_file = false,
         }
         header.setup(expected)
         assert.are.same(expected, header.config)

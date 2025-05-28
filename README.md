@@ -9,6 +9,7 @@
 - Add new copyright header
 - Update existing copyright header
 - Add common licenses, see [here](#adding-licenses)
+- Use `LICENCE` file from git repository, see [here](#use-license-file-from-git-repository)
 - Project specific configuration, see [here](#project-specific-configuration)
 - Keybindings, see [here](#keybindings)
 
@@ -45,6 +46,7 @@ The script comes with the following defaults:
     date_modified_fmt = "%Y-%m-%d %H:%M:%S",
     line_separator = "------",
     copyright_text = nil,
+    license_from_file = false,
 }
 ```
 
@@ -71,8 +73,42 @@ require("header").setup({
     date_modified_fmt = "%Y-%m-%d %H:%M:%S",
     line_separator = "------",
     copyright_text = "Copyright 2023",
+    license_from_file = false,
 })
 ```
+
+### Use LICENSE file from git repository
+
+To automatically include a license header from a `LICENSE`-style file from your Git repository, set `license_from_file` to `true`:
+
+```lua
+require("header").setup({
+    ...
+    license_from_file = true
+})
+```
+
+When enabled, the plugin will scan your project root for license-related files.
+If multiple candidates are found, you will be prompted to select one.
+The selected file will be cached for the duration of your current Neovim session to avoid repeated prompts.
+
+**Supported File Patterns**
+
+The following file names are recognized:
+
+- `LICENSE`, `LICENSE.md`, `LICENSE-*`
+- `LICENCE`, `LICENCE.md`, `LICENCE-*` (British spelling)
+- `COPYING`, `COPYING.md`
+- `UNLICENSE`, `UNLICENSE.md`
+- `NOTICE`, `NOTICE.md`
+- `LEGAL`, `LEGAL.md`
+
+> **⚠️ Matching is case-sensitive by default and limited to the top-level directory.**
+
+**Notes:**
+- This feature is useful when working on open-source projects that already include a license file.
+- License headers inserted from a file will be commented automatically based on the current filetype.
+- If you want to override the selected license file or insert a different one later, you can disable and re-enable the plugin, or restart Neovim.
 
 ### Project specific configuration
 
