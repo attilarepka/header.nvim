@@ -1,11 +1,3 @@
---[[
--- File name: header.lua
--- Author: Samuel Boyden
--- Date created: 2025-08-10
--- Date modified: 2025-08-10
--- All rights reserved.
---]]
-
 local filetype_table = require("filetypes")
 
 local header = {}
