@@ -14,6 +14,7 @@ header.config = {
     date_modified = true,
     date_modified_fmt = "%Y-%m-%d %H:%M:%S",
     line_separator = "------",
+    use_block_header = true,
     copyright_text = nil,
     license_from_file = false,
 }
@@ -372,7 +373,7 @@ local function add_headers()
     if fn then
         prepare_headers(function(headers)
             if headers then
-                local comments = fn()
+                local comments = fn(header.config.use_block_header)
                 remove_old_headers(comments)
                 local commented_headers = comment_headers(headers, comments)
                 local buffer = vim.api.nvim_get_current_buf()
@@ -395,7 +396,7 @@ local function add_license_header(opts)
         license = replace_token(license, "organization", header.config.author)
         license = replace_token(license, "year", os.date("%Y"))
         local license_table = string_to_table(license)
-        local comments = fn()
+        local comments = fn(header.config.use_block_header)
         remove_old_headers(comments)
         local commented_headers = comment_headers(license_table, comments)
         vim.api.nvim_buf_set_lines(buffer, 0, 0, false, commented_headers)
@@ -528,6 +529,7 @@ header.reset = function()
         date_modified = true,
         date_modified_fmt = "%Y-%m-%d %H:%M:%S",
         line_separator = "------",
+        use_block_header = true,
         copyright_text = nil,
         license_from_file = false,
     }
