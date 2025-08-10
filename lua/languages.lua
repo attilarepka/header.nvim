@@ -1,6 +1,6 @@
 local languages = {}
 languages.cpp = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -20,7 +20,7 @@ languages.python = function(_)
     return comments
 end
 languages.lua = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -32,7 +32,7 @@ languages.lua = function(use_block_header)
     return comments
 end
 languages.java = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -44,7 +44,7 @@ languages.java = function(use_block_header)
     return comments
 end
 languages.javascript = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -56,7 +56,7 @@ languages.javascript = function(use_block_header)
     return comments
 end
 languages.csharp = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -68,7 +68,7 @@ languages.csharp = function(use_block_header)
     return comments
 end
 languages.swift = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -80,7 +80,7 @@ languages.swift = function(use_block_header)
     return comments
 end
 languages.ruby = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -92,7 +92,7 @@ languages.ruby = function(use_block_header)
     return comments
 end
 languages.kotlin = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -104,7 +104,7 @@ languages.kotlin = function(use_block_header)
     return comments
 end
 languages.scala = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -116,7 +116,7 @@ languages.scala = function(use_block_header)
     return comments
 end
 languages.go = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -128,7 +128,7 @@ languages.go = function(use_block_header)
     return comments
 end
 languages.rust = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -140,7 +140,7 @@ languages.rust = function(use_block_header)
     return comments
 end
 languages.php = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -160,7 +160,7 @@ languages.shell = function(_)
     return comments
 end
 languages.haskell = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -172,7 +172,7 @@ languages.haskell = function(use_block_header)
     return comments
 end
 languages.perl = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -184,7 +184,7 @@ languages.perl = function(use_block_header)
     return comments
 end
 languages.typescript = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -196,7 +196,7 @@ languages.typescript = function(use_block_header)
     return comments
 end
 languages.coffeescript = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -208,7 +208,7 @@ languages.coffeescript = function(use_block_header)
     return comments
 end
 languages.groovy = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
@@ -220,7 +220,7 @@ languages.groovy = function(use_block_header)
     return comments
 end
 languages.dart = function(use_block_header)
-    if use_block_header ~= nil then
+    if use_block_header == nil then
         use_block_header = true
     end
 
