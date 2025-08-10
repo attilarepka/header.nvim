@@ -10,11 +10,20 @@ local function get_modified_date(buffer)
 end
 
 local function get_buffer_without_date(buffer, comments, constants)
+    local style
+    if header.config.use_block_header and comments.block and comments.block.start then
+        style = comments.block
+    elseif comments.line and comments.line.line then
+        style = comments.line
+    else
+        style = comments.block or comments.line
+    end
+
     result = {}
     for _, line in ipairs(buffer) do
         if
-            not line:match("^%" .. comments.comment .. " " .. constants.date_created)
-            and not line:match("^%" .. comments.comment .. " " .. constants.date_modified)
+            not line:match("^%" .. style.line .. " " .. constants.date_created)
+            and not line:match("^%" .. style.line .. " " .. constants.date_modified)
         then
             table.insert(result, line)
         end
@@ -23,19 +32,28 @@ local function get_buffer_without_date(buffer, comments, constants)
 end
 
 local function build_minimal_expected_comments(file_name, comments, header)
+    local style
+    if header.config.use_block_header and comments.block and comments.block.start then
+        style = comments.block
+    elseif comments.line and comments.line.line then
+        style = comments.line
+    else
+        style = comments.block or comments.line
+    end
+
     local result = {
-        comments.comment .. " " .. header.constants.file_name .. " " .. file_name,
-        comments.comment .. " " .. header.config.line_separator,
+        style.line .. " " .. header.constants.file_name .. " " .. file_name,
+        style.line .. " " .. header.config.line_separator,
         "",
         file_name,
     }
 
-    if comments.comment_start ~= nil then
+    if style.start and style["end"] then
         result = {
-            comments.comment_start,
-            comments.comment .. " " .. header.constants.file_name .. " " .. file_name,
-            comments.comment .. " " .. header.config.line_separator,
-            comments.comment_end,
+            style.start,
+            style.line .. " " .. header.constants.file_name .. " " .. file_name,
+            style.line .. " " .. header.config.line_separator,
+            style["end"],
             "",
             file_name,
         }
@@ -44,25 +62,34 @@ local function build_minimal_expected_comments(file_name, comments, header)
 end
 
 local function build_extended_expected_comments(file_name, comments, constants, config)
+    local style
+    if config.use_block_header and comments.block and comments.block.start then
+        style = comments.block
+    elseif comments.line and comments.line.line then
+        style = comments.line
+    else
+        style = comments.block or comments.line
+    end
+
     local result = {
-        comments.comment .. " " .. constants.file_name .. " " .. file_name,
-        comments.comment .. " " .. constants.project .. " " .. config.project,
-        comments.comment .. " " .. constants.author .. " " .. config.author,
-        comments.comment .. " " .. config.line_separator,
-        comments.comment .. " " .. config.copyright_text,
+        style.line .. " " .. constants.file_name .. " " .. file_name,
+        style.line .. " " .. constants.project .. " " .. config.project,
+        style.line .. " " .. constants.author .. " " .. config.author,
+        style.line .. " " .. config.line_separator,
+        style.line .. " " .. config.copyright_text,
         "",
         file_name,
     }
 
-    if comments.comment_start ~= nil then
+    if style.start and style["end"] then
         result = {
-            comments.comment_start,
-            comments.comment .. " " .. constants.file_name .. " " .. file_name,
-            comments.comment .. " " .. constants.project .. " " .. config.project,
-            comments.comment .. " " .. constants.author .. " " .. config.author,
-            comments.comment .. " " .. config.line_separator,
-            comments.comment .. " " .. config.copyright_text,
-            comments.comment_end,
+            style.start,
+            style.line .. " " .. constants.file_name .. " " .. file_name,
+            style.line .. " " .. constants.project .. " " .. config.project,
+            style.line .. " " .. constants.author .. " " .. config.author,
+            style.line .. " " .. config.line_separator,
+            style.line .. " " .. config.copyright_text,
+            style["end"],
             "",
             file_name,
         }
@@ -127,7 +154,7 @@ describe("add_headers", function()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-            local comments = v(header.config.use_block_header)
+            local comments = v()
 
             local expected = build_minimal_expected_comments(file_name, comments, header)
 
@@ -148,7 +175,7 @@ describe("add_headers", function()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-            local comments = v(header.config.use_block_header)
+            local comments = v()
 
             local expected = build_minimal_expected_comments(file_name, comments, header)
 
@@ -183,7 +210,7 @@ describe("add_headers", function()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-            local comments = v(config.use_block_header)
+            local comments = v()
             local expected = build_extended_expected_comments(file_name, comments, header.constants, config)
 
             local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
@@ -201,7 +228,7 @@ describe("add_headers", function()
 
             header.add_headers()
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-            local comments = v(header.config.use_block_header)
+            local comments = v()
 
             local config = {
                 file_name = true,
@@ -268,8 +295,8 @@ describe("add_headers", function()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-            local single_commented = v(header.config.use_block_header)
-            local block_commented = v(comparison_config.use_block_header)
+            local single_commented = v()
+            local block_commented = v()
 
             local expected = build_extended_expected_comments(file_name, single_commented, header.constants, config)
             local buffer_without_date = get_buffer_without_date(buffer, single_commented, header.constants)

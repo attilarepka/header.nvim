@@ -1,243 +1,150 @@
 local languages = {}
-languages.cpp = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.cpp = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.python = function(_)
-    local comments = {
-        comment_start = nil,
-        comment = "#",
-        comment_end = nil,
-    }
-    return comments
-end
-languages.lua = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "--[[" or nil,
-        comment = "--",
-        comment_end = use_block_header and "--]]" or nil,
+languages.python = function()
+    return {
+        block = nil,
+        line = { start = nil, line = "#", ["end"] = nil },
     }
-    return comments
 end
-languages.java = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.lua = function()
+    return {
+        block = { start = "--[[", line = "--", ["end"] = "]]" },
+        line = { start = nil, line = "--", ["end"] = nil },
     }
-    return comments
 end
-languages.javascript = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.java = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.csharp = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.javascript = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.swift = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.csharp = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.ruby = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "=begin" or nil,
-        comment = "#",
-        comment_end = use_block_header and "=end" or nil,
+languages.swift = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.kotlin = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.ruby = function()
+    return {
+        block = { start = "=begin", line = "#", ["end"] = "=end" },
+        line = { start = nil, line = "#", ["end"] = nil },
     }
-    return comments
 end
-languages.scala = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.kotlin = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.go = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.scala = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.rust = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.go = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.php = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.rust = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.shell = function(_)
-    local comments = {
-        comment_start = nil,
-        comment = "#",
-        comment_end = nil,
-    }
-    return comments
-end
-languages.haskell = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "{-" or nil,
-        comment = "--",
-        comment_end = use_block_header and "-}" or nil,
+languages.php = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.perl = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "=pod" or nil,
-        comment = "#",
-        comment_end = use_block_header and "=cut" or nil,
+languages.shell = function()
+    return {
+        block = nil,
+        line = { start = nil, line = "#", ["end"] = nil },
     }
-    return comments
 end
-languages.typescript = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.haskell = function()
+    return {
+        block = { start = "{-", line = "--", ["end"] = "-}" },
+        line = { start = nil, line = "--", ["end"] = nil },
     }
-    return comments
 end
-languages.coffeescript = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "###" or nil,
-        comment = "#",
-        comment_end = use_block_header and "###" or nil,
+languages.perl = function()
+    return {
+        block = { start = "=begin", line = "#", ["end"] = "=cut" },
+        line = { start = nil, line = "#", ["end"] = nil },
     }
-    return comments
 end
-languages.groovy = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.typescript = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
 end
-languages.dart = function(use_block_header)
-    if use_block_header == nil then
-        use_block_header = true
-    end
 
-    local comments = {
-        comment_start = use_block_header and "/*" or nil,
-        comment = use_block_header and "*" or "//",
-        comment_end = use_block_header and "*/" or nil,
+languages.coffeescript = function()
+    return {
+        block = { start = "###", line = "#", ["end"] = "###" },
+        line = { start = nil, line = "#", ["end"] = nil },
     }
-    return comments
 end
-languages.r = function(_)
-    local comments = {
-        comment_start = nil,
-        comment = "#",
-        comment_end = nil,
+
+languages.groovy = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
     }
-    return comments
+end
+
+languages.dart = function()
+    return {
+        block = { start = "/*", line = "*", ["end"] = "*/" },
+        line = { start = nil, line = "//", ["end"] = nil },
+    }
+end
+
+languages.r = function()
+    return {
+        block = nil,
+        line = { start = nil, line = "#", ["end"] = nil },
+    }
 end
 
 return languages
