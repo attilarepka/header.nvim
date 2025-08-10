@@ -1,5 +1,9 @@
 local languages = {}
 languages.cpp = function(use_block_header)
+    if use_block_header ~= nil then
+        use_block_header = true
+    end
+
     local comments = {
         comment_start = use_block_header and "/*" or nil,
         comment = use_block_header and "*" or "//",
