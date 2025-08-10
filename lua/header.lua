@@ -1,3 +1,11 @@
+--[[
+-- File name: header.lua
+-- Author: Samuel Boyden
+-- Date created: 2025-08-10
+-- Date modified: 2025-08-10
+-- All rights reserved.
+--]]
+
 local filetype_table = require("filetypes")
 
 local header = {}
@@ -413,7 +421,7 @@ local function update_date_modified()
         vim.notify("File type not supported for updating header", vim.log.levels.WARN)
         return
     end
-    local comments = filetype_table[file_extension]()
+    local comments = filetype_table[file_extension](header.config.use_block_header)
     local lines = get_header_lines(buffer, comments)
 
     if #lines > 0 and header.config.date_modified then
