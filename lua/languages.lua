@@ -16,7 +16,7 @@ end
 
 languages.lua = function()
     return {
-        block = { start = "--[[", line = "--", ["end"] = "]]" },
+        block = { start = "--[[", line = "--", ["end"] = "--]]" },
         line = { start = nil, line = "--", ["end"] = nil },
     }
 end
