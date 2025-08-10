@@ -128,8 +128,11 @@ local function find_line_comment_header_end(lines, comments)
     local last_comment_line = 0
 
     for i, line in ipairs(lines) do
-        if line:match(comment_pat) or line:match("^%s*$") then
+        if line:match(comment_pat) then
             last_comment_line = i
+        elseif line:match("^%s*$") then
+            last_comment_line = i
+            break
         else
             break
         end
