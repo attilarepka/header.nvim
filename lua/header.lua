@@ -2,7 +2,7 @@ local filetype_table = require("filetypes")
 
 local header = {}
 
-header.header_size = 9
+header.header_size = 30
 header.selected_license_file = nil
 
 header.config = {
@@ -113,22 +113,24 @@ local function find_block_comment_end(lines, comments)
 end
 
 local function find_line_comment_header_end(lines, comments)
-    if not comments and not comments.block and not comments.line then
+    if not comments and not comments.line then
         return 0
     end
 
-    local prefix
-    if header.config.use_block_header and comments.block and comments.block.line then
-        prefix = comments.block.line
-    else
-        prefix = comments.line.line
-    end
+    local start_block_pat = escape_special_characters(comments.block and comments.block.start or "")
+    local line_block_pat = escape_special_characters(comments.block and comments.block.line or "")
+    local end_block_pat = escape_special_characters(comments.block and comments.block["end"] or "")
 
-    local comment_pat = "^%s*" .. escape_special_characters(prefix)
+    local line_comment_pat = "^%s*" .. escape_special_characters(comments.line.line)
     local last_comment_line = 0
 
     for i, line in ipairs(lines) do
-        if line:match(comment_pat) then
+        if
+            line:match(line_comment_pat)
+            or (start_block_pat ~= "" and line:match("^%s*" .. start_block_pat))
+            or (line_block_pat ~= "" and line:match("^%s*" .. line_block_pat))
+            or (end_block_pat ~= "" and line:match("^%s*" .. end_block_pat))
+        then
             last_comment_line = i
         elseif line:match("^%s*$") then
             last_comment_line = i
