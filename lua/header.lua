@@ -87,31 +87,6 @@ local function escape_special_characters(pattern)
     return pattern
 end
 
--- local function find_block_comment_end(lines, comments)
---     local start_pat = escape_special_characters(comments.block.start or "")
---     local end_pat = escape_special_characters(comments.block["end"] or "")
---
---     if start_pat == "" or end_pat == "" then
---         return 0 -- Cannot proceed without both start and end
---     end
---
---     local found_start = false
---
---     for i, line in ipairs(lines) do
---         if not found_start then
---             if line:find(start_pat) then
---                 found_start = true
---             end
---         else
---             if line:find(end_pat) then
---                 return i -- End of block header (inclusive)
---             end
---         end
---     end
---
---     return 0 -- No complete block comment found
--- end
-
 local function find_header_comment_end(lines, comments)
     if not comments and not comments.line then
         return 0
@@ -126,12 +101,11 @@ local function find_header_comment_end(lines, comments)
     local last_comment_line = 0
 
     for i, line in ipairs(lines) do
-        -- stylua: ignore start
         if
-            (line_comment_pat   ~= "" and line:match("^%s*" .. line_comment_pat))
+            (line_comment_pat ~= "" and line:match("^%s*" .. line_comment_pat))
             or (block_start_pat ~= "" and line:match("^%s*" .. block_start_pat))
-            or (block_line_pat  ~= "" and line:match("^%s*" .. block_line_pat))
-            or (block_end_pat   ~= "" and line:match("^%s*" .. block_end_pat))
+            or (block_line_pat ~= "" and line:match("^%s*" .. block_line_pat))
+            or (block_end_pat ~= "" and line:match("^%s*" .. block_end_pat))
         then
             last_comment_line = i
         elseif line:match("^%s*$") then -- shortcircuit on the first white-space only/empty line
@@ -140,7 +114,6 @@ local function find_header_comment_end(lines, comments)
         else
             break
         end
-        -- stylua: ignore end
     end
 
     return last_comment_line
