@@ -87,68 +87,67 @@ local function escape_special_characters(pattern)
     return pattern
 end
 
-local function find_block_comment_end(lines, comments)
-    local start_pat = escape_special_characters(comments.block.start or "")
-    local end_pat = escape_special_characters(comments.block["end"] or "")
+-- local function find_block_comment_end(lines, comments)
+--     local start_pat = escape_special_characters(comments.block.start or "")
+--     local end_pat = escape_special_characters(comments.block["end"] or "")
+--
+--     if start_pat == "" or end_pat == "" then
+--         return 0 -- Cannot proceed without both start and end
+--     end
+--
+--     local found_start = false
+--
+--     for i, line in ipairs(lines) do
+--         if not found_start then
+--             if line:find(start_pat) then
+--                 found_start = true
+--             end
+--         else
+--             if line:find(end_pat) then
+--                 return i -- End of block header (inclusive)
+--             end
+--         end
+--     end
+--
+--     return 0 -- No complete block comment found
+-- end
 
-    if start_pat == "" or end_pat == "" then
-        return 0 -- Cannot proceed without both start and end
-    end
-
-    local found_start = false
-
-    for i, line in ipairs(lines) do
-        if not found_start then
-            if line:find(start_pat) then
-                found_start = true
-            end
-        else
-            if line:find(end_pat) then
-                return i -- End of block header (inclusive)
-            end
-        end
-    end
-
-    return 0 -- No complete block comment found
-end
-
-local function find_line_comment_header_end(lines, comments)
+local function find_header_comment_end(lines, comments)
     if not comments and not comments.line then
         return 0
     end
 
-    local start_block_pat = escape_special_characters(comments.block and comments.block.start or "")
-    local line_block_pat = escape_special_characters(comments.block and comments.block.line or "")
-    local end_block_pat = escape_special_characters(comments.block and comments.block["end"] or "")
+    local block_start_pat = escape_special_characters(comments.block and comments.block.start or "")
+    local block_line_pat = escape_special_characters(comments.block and comments.block.line or "")
+    local block_end_pat = escape_special_characters(comments.block and comments.block["end"] or "")
 
-    local line_comment_pat = "^%s*" .. escape_special_characters(comments.line.line)
+    local line_comment_pat = escape_special_characters(comments.line and comments.line.line or "")
+
     local last_comment_line = 0
 
     for i, line in ipairs(lines) do
+        -- stylua: ignore start
         if
-            line:match(line_comment_pat)
-            or (start_block_pat ~= "" and line:match("^%s*" .. start_block_pat))
-            or (line_block_pat ~= "" and line:match("^%s*" .. line_block_pat))
-            or (end_block_pat ~= "" and line:match("^%s*" .. end_block_pat))
+            (line_comment_pat   ~= "" and line:match("^%s*" .. line_comment_pat))
+            or (block_start_pat ~= "" and line:match("^%s*" .. block_start_pat))
+            or (block_line_pat  ~= "" and line:match("^%s*" .. block_line_pat))
+            or (block_end_pat   ~= "" and line:match("^%s*" .. block_end_pat))
         then
             last_comment_line = i
-        elseif line:match("^%s*$") then
+        elseif line:match("^%s*$") then -- shortcircuit on the first white-space only/empty line
             last_comment_line = i
             break
         else
             break
         end
+        -- stylua: ignore end
     end
 
     return last_comment_line
 end
 
 local function find_header_end(lines, comments)
-    if header.config.use_block_header and comments.block and comments.block.start and comments.block["end"] then
-        return find_block_comment_end(lines, comments)
-    else
-        return find_line_comment_header_end(lines, comments)
-    end
+    return find_header_comment_end(lines, comments)
 end
 
 local function remove_old_headers(comments)
