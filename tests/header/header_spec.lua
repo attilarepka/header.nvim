@@ -103,6 +103,7 @@ describe("setup", function()
     end)
     it("setup with default configs", function()
         local expected = {
+            allow_autocmds = true,
             file_name = true,
             author = nil,
             project = nil,
@@ -121,6 +122,7 @@ describe("setup", function()
 
     it("setup with custom configs", function()
         local expected = {
+            allow_autocmds = false,
             file_name = true,
             author = "test_author",
             project = "test_project",
