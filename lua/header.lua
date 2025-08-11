@@ -2,7 +2,7 @@ local filetype_table = require("filetypes")
 
 local header = {}
 
-header.header_size = 9
+header.header_size = 30
 header.selected_license_file = nil
 
 header.config = {
@@ -15,6 +15,7 @@ header.config = {
     date_modified = true,
     date_modified_fmt = "%Y-%m-%d %H:%M:%S",
     line_separator = "------",
+    use_block_header = true,
     copyright_text = nil,
     license_from_file = false,
 }
@@ -27,23 +28,32 @@ header.constants = {
     date_modified = "Date modified:",
 }
 
-local function comment_headers(header_lines, comments)
-    local result = {}
-
-    if comments.comment_start ~= nil then
-        table.insert(result, comments.comment_start)
+local function comment_headers(headers, comments, use_block_header)
+    local style
+    if use_block_header and comments.block and comments.block.start then
+        style = comments.block
+    elseif comments.line and comments.line.line then
+        style = comments.line
+    else
+        style = comments.block or comments.line
     end
 
-    for _, entry in ipairs(header_lines) do
-        if entry == "" then
-            table.insert(result, comments.comment)
+    local result = {}
+
+    if style.start then
+        table.insert(result, style.start)
+    end
+
+    for _, _header in ipairs(headers) do
+        if style.line then
+            table.insert(result, style.line .. " " .. _header)
         else
-            table.insert(result, comments.comment .. " " .. entry)
+            table.insert(result, _header)
         end
     end
 
-    if comments.comment_end ~= nil then
-        table.insert(result, comments.comment_end)
+    if style["end"] then
+        table.insert(result, style["end"])
     end
 
     table.insert(result, "")
@@ -78,42 +88,30 @@ local function escape_special_characters(pattern)
     return pattern
 end
 
-local function find_block_comment_end(lines, comments)
-    local start_pat = escape_special_characters(comments.comment_start or "")
-    local end_pat = escape_special_characters(comments.comment_end or "")
-
-    if start_pat == "" or end_pat == "" then
-        return 0 -- Cannot proceed without both start and end
-    end
-
-    local found_start = false
-
-    for i, line in ipairs(lines) do
-        if not found_start then
-            if line:find(start_pat) then
-                found_start = true
-            end
-        else
-            if line:find(end_pat) then
-                return i -- End of block header (inclusive)
-            end
-        end
-    end
-
-    return 0 -- No complete block comment found
-end
-
-local function find_line_comment_header_end(lines, comments)
-    if not comments or not comments.comment then
+local function find_header_comment_end(lines, comments)
+    if not comments and not comments.line then
         return 0
     end
 
-    local comment_pat = "^%s*" .. escape_special_characters(comments.comment)
+    local block_start_pat = escape_special_characters(comments.block and comments.block.start or "")
+    local block_line_pat = escape_special_characters(comments.block and comments.block.line or "")
+    local block_end_pat = escape_special_characters(comments.block and comments.block["end"] or "")
+
+    local line_comment_pat = escape_special_characters(comments.line and comments.line.line or "")
+
     local last_comment_line = 0
 
     for i, line in ipairs(lines) do
-        if line:match(comment_pat) or line:match("^%s*$") then
+        if
+            (line_comment_pat ~= "" and line:match("^%s*" .. line_comment_pat))
+            or (block_start_pat ~= "" and line:match("^%s*" .. block_start_pat))
+            or (block_line_pat ~= "" and line:match("^%s*" .. block_line_pat))
+            or (block_end_pat ~= "" and line:match("^%s*" .. block_end_pat))
+        then
             last_comment_line = i
+        elseif line:match("^%s*$") then -- shortcircuit on the first white-space only/empty line
+            last_comment_line = i
+            break
         else
             break
         end
@@ -123,11 +121,7 @@ local function find_line_comment_header_end(lines, comments)
 end
 
 local function find_header_end(lines, comments)
-    if comments.comment_start and comments.comment_end then
-        return find_block_comment_end(lines, comments)
-    else
-        return find_line_comment_header_end(lines, comments)
-    end
+    return find_header_comment_end(lines, comments)
 end
 
 local function remove_old_headers(comments)
@@ -375,7 +369,7 @@ local function add_headers()
             if headers then
                 local comments = fn()
                 remove_old_headers(comments)
-                local commented_headers = comment_headers(headers, comments)
+                local commented_headers = comment_headers(headers, comments, header.config.use_block_header)
                 local buffer = vim.api.nvim_get_current_buf()
                 vim.api.nvim_buf_set_lines(buffer, 0, 0, false, commented_headers)
             end
@@ -398,7 +392,7 @@ local function add_license_header(opts)
         local license_table = string_to_table(license)
         local comments = fn()
         remove_old_headers(comments)
-        local commented_headers = comment_headers(license_table, comments)
+        local commented_headers = comment_headers(license_table, comments, header.config.use_block_header)
         vim.api.nvim_buf_set_lines(buffer, 0, 0, false, commented_headers)
     else
         vim.notify_once("unsupported file type for adding header", vim.log.levels.ERROR)
@@ -422,14 +416,19 @@ local function update_date_modified()
 
         for i, line in ipairs(lines) do
             if line:find(header.constants.date_modified) then
-                local comment_start = line:find(comments.comment)
+                local prefix
+                if header.config.use_block_header and comments.block and comments.block.line then
+                    prefix = comments.block.line
+                elseif comments.line and comments.line.line then
+                    prefix = comments.line.line
+                else
+                    prefix = comments.block and comments.block.start or comments.line and comments.line.start or ""
+                end
+
+                local comment_start = line:find(prefix)
                 local line_beginning = line:sub(1, comment_start - 1)
-                lines[i] = line_beginning
-                    .. comments.comment
-                    .. " "
-                    .. header.constants.date_modified
-                    .. " "
-                    .. modified_date
+
+                lines[i] = line_beginning .. prefix .. " " .. header.constants.date_modified .. " " .. modified_date
                 break
             end
         end
@@ -530,6 +529,7 @@ header.reset = function()
         date_modified = true,
         date_modified_fmt = "%Y-%m-%d %H:%M:%S",
         line_separator = "------",
+        use_block_header = true,
         copyright_text = nil,
         license_from_file = false,
     }
