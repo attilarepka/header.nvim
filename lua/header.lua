@@ -6,6 +6,7 @@ header.header_size = 30
 header.selected_license_file = nil
 
 header.config = {
+    allow_autocmds = true,
     file_name = true,
     author = nil,
     project = nil,
@@ -519,6 +520,7 @@ end
 
 header.reset = function()
     header.config = {
+        allow_autocmds = true,
         file_name = true,
         author = nil,
         project = nil,
