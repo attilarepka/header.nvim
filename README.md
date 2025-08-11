@@ -37,6 +37,7 @@ The script comes with the following defaults:
 
 ```lua
 {
+    allow_autocmds = true,
     file_name = true,
     author = nil,
     project = nil,
@@ -64,6 +65,7 @@ Example:
 
 ```lua
 require("header").setup({
+    allow_autocmds = true,
     file_name = true,
     author = "Foo",
     project = "header.nvim",
