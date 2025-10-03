@@ -49,6 +49,7 @@ The script comes with the following defaults:
     use_block_header = true,
     copyright_text = nil,
     license_from_file = false,
+    author_from_git = false,
 }
 ```
 
@@ -82,6 +83,7 @@ require("header").setup({
       "All rights reserved."
     },
     license_from_file = false,
+    author_from_git = false,
 })
 ```
 

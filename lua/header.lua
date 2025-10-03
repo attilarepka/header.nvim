@@ -18,6 +18,7 @@ header.config = {
     use_block_header = true,
     copyright_text = nil,
     license_from_file = false,
+    author_from_git = false,
 }
 
 header.constants = {
@@ -332,6 +333,13 @@ local function prepare_headers(callback)
 
     -- Format modified_time as a human-readable string
     creation_date = os.date(header.config.date_created_fmt, creation_date)
+
+    if header.config.author_from_git then
+        local result = vim.fn.systemlist("git config user.name")
+        if vim.v.shell_error == 0 and #result > 0 then
+            header.config.author = result[1]
+        end
+    end
 
     local headers = {}
     if header.config.file_name then
