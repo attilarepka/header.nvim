@@ -45,7 +45,7 @@ The script comes with the following defaults:
     date_created_fmt = "%Y-%m-%d %H:%M:%S",
     date_modified = true,
     date_modified_fmt = "%Y-%m-%d %H:%M:%S",
-    line_separator = "------",
+    line_separator = nil,
     use_block_header = true,
     copyright_text = nil,
     license_from_file = false,
@@ -76,7 +76,11 @@ require("header").setup({
     date_modified_fmt = "%Y-%m-%d %H:%M:%S",
     line_separator = "------",
     use_block_header = false,
-    copyright_text = "Copyright 2023",
+    "copyright_text": [
+      "Copyright (c) 2023 Your Name",
+      "Your Company",
+      "All rights reserved."
+    ],
     license_from_file = false,
 })
 ```
@@ -130,7 +134,11 @@ The default configuration can be overwritten by a local project `.header.nvim` f
   "date_modified_fmt": "%Y-%m-%d %H:%M:%S",
   "line_separator": "------",
   "use_block_header": true,
-  "copyright_text": "Copyright (c) 2023 Your Name"
+  "copyright_text": [
+    "Copyright (c) 2023 Your Name",
+    "Your Company",
+    "All rights reserved."
+  ]
 }
 ```
 

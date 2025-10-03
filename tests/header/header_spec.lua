@@ -71,29 +71,42 @@ local function build_extended_expected_comments(file_name, comments, constants, 
         style = comments.block or comments.line
     end
 
-    local result = {
-        style.line .. " " .. constants.file_name .. " " .. file_name,
-        style.line .. " " .. constants.project .. " " .. config.project,
-        style.line .. " " .. constants.author .. " " .. config.author,
-        style.line .. " " .. config.line_separator,
-        style.line .. " " .. config.copyright_text,
-        "",
-        file_name,
-    }
+    local result = {}
 
-    if style.start and style["end"] then
-        result = {
-            style.start,
-            style.line .. " " .. constants.file_name .. " " .. file_name,
-            style.line .. " " .. constants.project .. " " .. config.project,
-            style.line .. " " .. constants.author .. " " .. config.author,
-            style.line .. " " .. config.line_separator,
-            style.line .. " " .. config.copyright_text,
-            style["end"],
-            "",
-            file_name,
-        }
+    local function append_copyright_lines(text)
+        if not text then
+            return
+        end
+        if type(text) == "string" then
+            -- split on \n if any
+            for line in text:gmatch("[^\r\n]+") do
+                table.insert(result, style.line .. " " .. line)
+            end
+        elseif type(text) == "table" then
+            for _, line in ipairs(text) do
+                table.insert(result, style.line .. " " .. line)
+            end
+        end
     end
+
+    if style.start then
+        table.insert(result, style.start)
+    end
+
+    table.insert(result, style.line .. " " .. constants.file_name .. " " .. file_name)
+    table.insert(result, style.line .. " " .. constants.project .. " " .. config.project)
+    table.insert(result, style.line .. " " .. constants.author .. " " .. config.author)
+    table.insert(result, style.line .. " " .. config.line_separator)
+    append_copyright_lines(config.copyright_text)
+
+    if style["end"] then
+        table.insert(result, style["end"])
+    end
+
+    -- extra empty line and file name
+    table.insert(result, "")
+    table.insert(result, file_name)
+
     return result
 end
 
@@ -313,6 +326,74 @@ describe("add_headers", function()
                     build_extended_expected_comments(file_name, block_commented, header.constants, comparison_config)
                 assert.are.not_same(expected, buffer_without_date)
             end
+        end
+    end)
+    it("should support multiline copyright text as an array", function()
+        local filetypes = require("filetypes")
+        for k, v in pairs(filetypes) do
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+            local file_name = "main." .. k
+            vim.fn.setline(1, file_name)
+            vim.api.nvim_buf_set_name(0, file_name)
+
+            local config = {
+                file_name = true,
+                author = "test_author_name",
+                project = "test_project_name",
+                date_created = true,
+                date_created_fmt = "%Y-%m-%d %H:%M:%S",
+                date_modified = true,
+                date_modified_fmt = "%Y-%m-%d %H:%M:%S",
+                line_separator = "------",
+                use_block_header = true,
+                copyright_text = {
+                    "Copyright (c) 2023 Your Name",
+                    "Your Company",
+                    "All rights reserved."
+                },
+            }
+            header.setup(config)
+
+            header.add_headers()
+
+            local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+            local comments = v()
+            local expected = build_extended_expected_comments(file_name, comments, header.constants, config)
+            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+
+            assert.are.same(expected, buffer_without_date)
+        end
+    end)
+    it("should support multiline copyright text as a string with '\\n' separators", function()
+        local filetypes = require("filetypes")
+        for k, v in pairs(filetypes) do
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+            local file_name = "main." .. k
+            vim.fn.setline(1, file_name)
+            vim.api.nvim_buf_set_name(0, file_name)
+
+            local config = {
+                file_name = true,
+                author = "test_author_name",
+                project = "test_project_name",
+                date_created = true,
+                date_created_fmt = "%Y-%m-%d %H:%M:%S",
+                date_modified = true,
+                date_modified_fmt = "%Y-%m-%d %H:%M:%S",
+                line_separator = "------",
+                use_block_header = true,
+                copyright_text = "Copyright (c) 2023 Your Name\nYour Company\nAll rights reserved."
+            }
+
+            header.setup(config)
+            header.add_headers()
+
+            local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+            local comments = v()
+            local expected = build_extended_expected_comments(file_name, comments, header.constants, config)
+            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+
+            assert.are.same(expected, buffer_without_date)
         end
     end)
 end)
