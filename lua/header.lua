@@ -14,7 +14,7 @@ header.config = {
     date_created_fmt = "%Y-%m-%d %H:%M:%S",
     date_modified = true,
     date_modified_fmt = "%Y-%m-%d %H:%M:%S",
-    line_separator = "------",
+    line_separator = nil,
     use_block_header = true,
     copyright_text = nil,
     license_from_file = false,
@@ -354,7 +354,12 @@ local function prepare_headers(callback)
         table.insert(headers, header.config.line_separator)
     end
     if header.config.copyright_text ~= nil then
-        table.insert(headers, header.config.copyright_text)
+        if type(header.config.copyright_text) == "string" then
+            local copyright_lines = string_to_table(header.config.copyright_text)
+            vim.list_extend(headers, copyright_lines)
+        elseif type(header.config.copyright_text) == "table" then
+            vim.list_extend(headers, header.config.copyright_text)
+        end
     end
 
     callback(headers)
