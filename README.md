@@ -76,11 +76,11 @@ require("header").setup({
     date_modified_fmt = "%Y-%m-%d %H:%M:%S",
     line_separator = "------",
     use_block_header = false,
-    "copyright_text": [
+    copyright_text = {
       "Copyright (c) 2023 Your Name",
       "Your Company",
       "All rights reserved."
-    ],
+    },
     license_from_file = false,
 })
 ```
