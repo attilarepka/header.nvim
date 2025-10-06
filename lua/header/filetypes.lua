@@ -1,8 +1,6 @@
-local languages = require("languages")
+local languages = require("header.languages")
 
-local filetype_table = {}
-
-filetype_table = {
+local filetype_table = {
     ["c"] = languages.cpp,
     ["cc"] = languages.cpp,
     ["cpp"] = languages.cpp,
