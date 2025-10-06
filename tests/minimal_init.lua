@@ -1,3 +1,8 @@
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.writebackup = false
+vim.opt.undofile = false
+
 local plenary_dir = os.getenv("PLENARY_DIR") or "/tmp/plenary.nvim"
 local is_not_a_directory = vim.fn.isdirectory(plenary_dir) == 0
 if is_not_a_directory then
