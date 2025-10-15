@@ -43,6 +43,13 @@ function M.add_headers(header)
 
     -- prepare headers (inline version)
     local function prepare(cb)
+        if header.config.author_from_git then
+            local gitname = vim.fn.systemlist("git config user.name")
+            if vim.v.shell_error == 0 and #gitname > 0 then
+                header.config.author = gitname[1]
+            end
+        end
+
         if header.config.license_from_file then
             local files = license.scan_license_files()
             if #files == 0 then
@@ -65,12 +72,6 @@ function M.add_headers(header)
 
         local file = vim.fn.expand("%:t")
         local created = os.date(header.config.date_created_fmt, vim.fn.getftime(vim.fn.expand("%")))
-        if header.config.author_from_git then
-            local gitname = vim.fn.systemlist("git config user.name")
-            if vim.v.shell_error == 0 and #gitname > 0 then
-                header.config.author = gitname[1]
-            end
-        end
 
         local hdrs = {}
         if header.config.file_name then
@@ -105,8 +106,14 @@ function M.add_headers(header)
         if not hdrs then
             return
         end
+
+        local new_hrds = {}
+        for i, line in ipairs(hdrs) do
+            new_hrds[i] = util.replace_all_tokens(line, header)
+        end
+
         remove_old_headers(comments_table)
-        local commented = comments.comment_headers(hdrs, comments_table, header.config.use_block_header)
+        local commented = comments.comment_headers(new_hrds, comments_table, header.config.use_block_header)
         vim.api.nvim_buf_set_lines(0, 0, 0, false, commented)
     end)
 end
@@ -119,9 +126,7 @@ function M.add_license_header(header, opts)
     end
 
     local license_text = require("header.licenses." .. string.lower(opts))
-    license_text = util.replace_token(license_text, "project", header.config.project)
-    license_text = util.replace_token(license_text, "organization", header.config.author)
-    license_text = util.replace_token(license_text, "year", os.date("%Y"))
+    license_text = util.replace_all_tokens(license_text, header)
 
     local license_table = util.string_to_table(license_text)
     local comments_table = comments_fn()
