@@ -1,4 +1,3 @@
-local util = require("header.util")
 local M = {}
 
 function M.scan_license_files()
