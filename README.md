@@ -28,7 +28,12 @@ use({ "attilarepka/header.nvim", config = function() require("header").setup() e
 with [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
-{"attilarepka/header.nvim", config = true}
+{
+    "attilarepka/header.nvim",
+    config = function()
+        require("header").setup()
+    end,
+},
 ```
 
 ## Setup
