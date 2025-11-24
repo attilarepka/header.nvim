@@ -6,9 +6,10 @@ local function replace_token(str, token, value)
 end
 
 function M.string_to_table(str)
-    local lines = {}
-    for line in str:gmatch("[^\r\n]+") do
-        table.insert(lines, line)
+    str = str:gsub("\r\n", "\n")
+    local lines = vim.split(str, "\n")
+    if #lines > 0 and lines[#lines] == "" then
+        table.remove(lines)
     end
     return lines
 end
