@@ -44,6 +44,7 @@ The script comes with the following defaults:
 {
     allow_autocmds = true,
     file_name = true,
+    file_full_path = false,
     author = nil,
     project = nil,
     date_created = true,
@@ -74,6 +75,7 @@ Example:
 require("header").setup({
     allow_autocmds = true,
     file_name = true,
+    file_full_path = false,
     author = "Foo",
     project = "header.nvim",
     date_created = true,
@@ -133,6 +135,7 @@ The default configuration can be overwritten by a local project `.header.nvim` f
 {
   "allow_autocmds": true,
   "file_name": true,
+  "file_full_path": false,
   "author": "Your Name",
   "project": "Your Project",
   "date_created": true,

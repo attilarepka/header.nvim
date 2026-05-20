@@ -70,7 +70,13 @@ function M.add_headers(header)
             return
         end
 
-        local file = vim.fn.expand("%:t")
+        local file
+        if header.config.file_full_path then
+            file = vim.fn.expand("%:p") -- full path
+        else
+            file = vim.fn.expand("%:t") -- tail only (original behaviour)
+        end
+
         local created = os.date(header.config.date_created_fmt, vim.fn.getftime(vim.fn.expand("%")))
 
         local hdrs = {}

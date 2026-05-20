@@ -3,6 +3,7 @@ local M = {}
 M.defaults = {
     allow_autocmds = true,
     file_name = true,
+    file_full_path = false,
     author = nil,
     project = nil,
     date_created = true,
