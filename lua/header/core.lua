@@ -72,9 +72,9 @@ function M.add_headers(header)
 
         local file
         if header.config.file_full_path then
-            file = vim.fn.expand("%:p") -- full path
+            file = vim.fn.expand("%:p")
         else
-            file = vim.fn.expand("%:t") -- tail only (original behaviour)
+            file = vim.fn.expand("%:t")
         end
 
         local created = os.date(header.config.date_created_fmt, vim.fn.getftime(vim.fn.expand("%")))

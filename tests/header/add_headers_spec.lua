@@ -331,4 +331,45 @@ describe("add_headers", function()
             assert.are.same(expected, buffer_without_date)
         end
     end)
+
+    it("should use full path when file_full_path is true", function()
+        for k, v in pairs(filetypes) do
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+            local file_name = "main." .. k
+            local full_path = "/home/user/projects/myproject/" .. file_name
+            vim.fn.setline(1, file_name)
+            vim.api.nvim_buf_set_name(0, full_path)
+
+            header.setup({ file_full_path = true })
+            header.add_headers()
+
+            local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+            local comments = v()
+            local expected = build_minimal_expected_comments(full_path, comments)
+            expected[#expected] = file_name
+            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+
+            assert.are.same(expected, buffer_without_date)
+        end
+    end)
+
+    it("should use filename only when file_full_path is false (default)", function()
+        for k, v in pairs(filetypes) do
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+            local file_name = "main." .. k
+            local full_path = "/home/user/projects/myproject/" .. file_name
+            vim.fn.setline(1, file_name)
+            vim.api.nvim_buf_set_name(0, full_path)
+
+            header.setup({ file_full_path = false })
+            header.add_headers()
+
+            local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+            local comments = v()
+            local expected = build_minimal_expected_comments(file_name, comments)
+            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+
+            assert.are.same(expected, buffer_without_date)
+        end
+    end)
 end)
