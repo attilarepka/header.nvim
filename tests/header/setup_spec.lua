@@ -7,6 +7,7 @@ describe("setup", function()
         local expected = {
             allow_autocmds = true,
             file_name = true,
+            file_full_path = false,
             author = nil,
             project = nil,
             date_created = true,
@@ -27,6 +28,7 @@ describe("setup", function()
         local expected = {
             allow_autocmds = false,
             file_name = true,
+            file_full_path = false,
             author = "test_author",
             project = "test_project",
             date_created = true,
