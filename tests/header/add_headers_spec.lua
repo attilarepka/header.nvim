@@ -1,15 +1,15 @@
 require("plenary.reload").reload_module("header", true)
 local header = require("header")
-local filetypes = require("header.filetypes")
+local languages = require("header.languages")
 
-local function get_buffer_without_date(buffer, comments, constants)
+local function get_buffer_without_date(buffer, comment_style, constants)
     local style
-    if header.config.use_block_header and comments.block and comments.block.start then
-        style = comments.block
-    elseif comments.line and comments.line.line then
-        style = comments.line
+    if header.config.use_block_header and comment_style.block and comment_style.block.start then
+        style = comment_style.block
+    elseif comment_style.line and comment_style.line.line then
+        style = comment_style.line
     else
-        style = comments.block or comments.line
+        style = comment_style.block or comment_style.line
     end
 
     local result = {}
@@ -24,14 +24,14 @@ local function get_buffer_without_date(buffer, comments, constants)
     return result
 end
 
-local function build_minimal_expected_comments(file_name, comments)
+local function build_minimal_expected_comments(file_name, comment_style)
     local style
-    if header.config.use_block_header and comments.block and comments.block.start then
-        style = comments.block
-    elseif comments.line and comments.line.line then
-        style = comments.line
+    if header.config.use_block_header and comment_style.block and comment_style.block.start then
+        style = comment_style.block
+    elseif comment_style.line and comment_style.line.line then
+        style = comment_style.line
     else
-        style = comments.block or comments.line
+        style = comment_style.block or comment_style.line
     end
 
     local result = {
@@ -54,14 +54,14 @@ local function build_minimal_expected_comments(file_name, comments)
     return result
 end
 
-local function build_extended_expected_comments(file_name, comments, constants, config)
+local function build_extended_expected_comments(file_name, comment_style, constants, config)
     local style
-    if config.use_block_header and comments.block and comments.block.start then
-        style = comments.block
-    elseif comments.line and comments.line.line then
-        style = comments.line
+    if config.use_block_header and comment_style.block and comment_style.block.start then
+        style = comment_style.block
+    elseif comment_style.line and comment_style.line.line then
+        style = comment_style.line
     else
-        style = comments.block or comments.line
+        style = comment_style.block or comment_style.line
     end
 
     local result = {}
@@ -95,50 +95,58 @@ local function build_extended_expected_comments(file_name, comments, constants, 
     return result
 end
 
-describe("add_headers", function()
+local function get_all_extensions()
+    local exts = {}
+    for ext, lang_fn in pairs(languages) do
+        table.insert(exts, ext)
+    end
+    return exts
+end
+
+describe("add_header", function()
     header.setup()
     before_each(function()
         header.reset()
     end)
 
     it("should insert headers to file depending on file type", function()
-        for k, v in pairs(filetypes) do
+        for _, ext in ipairs(get_all_extensions()) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-            local file_name = "main." .. k
+            local file_name = "main." .. ext
             vim.fn.setline(1, file_name)
             vim.api.nvim_buf_set_name(0, file_name)
 
-            header.add_headers()
+            header.add_header()
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-            local comments = v()
-            local expected = build_minimal_expected_comments(file_name, comments)
-            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+            local lang = languages[ext]()
+            local expected = build_minimal_expected_comments(file_name, lang.comment_style)
+            local buffer_without_date = get_buffer_without_date(buffer, lang.comment_style, header.constants)
             assert.are.same(expected, buffer_without_date)
         end
     end)
 
     it("should insert headers via autocommand", function()
-        for k, v in pairs(filetypes) do
+        for _, ext in ipairs(get_all_extensions()) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-            local file_name = "main." .. k
+            local file_name = "main." .. ext
             vim.fn.setline(1, file_name)
             vim.api.nvim_buf_set_name(0, file_name)
 
             vim.api.nvim_command("AddHeader")
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-            local comments = v()
-            local expected = build_minimal_expected_comments(file_name, comments)
-            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+            local lang = languages[ext]()
+            local expected = build_minimal_expected_comments(file_name, lang.comment_style)
+            local buffer_without_date = get_buffer_without_date(buffer, lang.comment_style, header.constants)
 
             assert.are.same(expected, buffer_without_date)
         end
     end)
 
     it("should insert additional brief information to header", function()
-        for k, v in pairs(filetypes) do
+        for _, ext in ipairs(get_all_extensions()) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-            local file_name = "main." .. k
+            local file_name = "main." .. ext
             vim.fn.setline(1, file_name)
             vim.api.nvim_buf_set_name(0, file_name)
 
@@ -156,29 +164,29 @@ describe("add_headers", function()
             }
             header.setup(config)
 
-            header.add_headers()
+            header.add_header()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-            local comments = v()
-            local expected = build_extended_expected_comments(file_name, comments, header.constants, config)
+            local lang = languages[ext]()
+            local expected = build_extended_expected_comments(file_name, lang.comment_style, header.constants, config)
 
-            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+            local buffer_without_date = get_buffer_without_date(buffer, lang.comment_style, header.constants)
 
             assert.are.same(expected, buffer_without_date)
         end
     end)
 
     it("should update existing header files", function()
-        for k, v in pairs(filetypes) do
+        for _, ext in ipairs(get_all_extensions()) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-            local file_name = "main." .. k
+            local file_name = "main." .. ext
             vim.fn.setline(1, file_name)
             vim.api.nvim_buf_set_name(0, file_name)
 
-            header.add_headers()
+            header.add_header()
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-            local comments = v()
+            local lang = languages[ext]()
 
             local config = {
                 file_name = true,
@@ -192,24 +200,23 @@ describe("add_headers", function()
                 use_block_header = true,
                 copyright_text = "test_copyright",
             }
-            -- update config with extended stuff
             header.setup(config)
-            header.add_headers()
+            header.add_header()
 
             buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-            local expected = build_extended_expected_comments(file_name, comments, header.constants, config)
+            local expected = build_extended_expected_comments(file_name, lang.comment_style, header.constants, config)
 
-            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+            local buffer_without_date = get_buffer_without_date(buffer, lang.comment_style, header.constants)
 
             assert.are.same(expected, buffer_without_date)
         end
     end)
 
     it("should prefer to use the single-line comment type over block comment", function()
-        for k, v in pairs(filetypes) do
+        for _, ext in ipairs(get_all_extensions()) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-            local file_name = "main." .. k
+            local file_name = "main." .. ext
             vim.fn.setline(1, file_name)
             vim.api.nvim_buf_set_name(0, file_name)
 
@@ -241,22 +248,21 @@ describe("add_headers", function()
 
             header.setup(config)
 
-            header.add_headers()
+            header.add_header()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-            local single_commented = v()
-            local block_commented = v()
+            local lang = languages[ext]()
+            local single_commented = lang.comment_style
+            local block_commented = lang.comment_style
 
             local expected = build_extended_expected_comments(file_name, single_commented, header.constants, config)
             local buffer_without_date = get_buffer_without_date(buffer, single_commented, header.constants)
 
             assert.are.same(expected, buffer_without_date)
 
-            if single_commented.comment_start == nil and block_commented.comment_start ~= nil then
-                -- if comments and opposite_comments are different, we should not have the opposite
-                -- comments in the buffer, this should only be true for
-                -- languages that support both block and single-line comments
+            -- Only test the difference if language actually has BOTH block and line comment_style
+            if lang.comment_style.line and lang.comment_style.line.line and lang.comment_style.block and lang.comment_style.block.start then
                 expected =
                     build_extended_expected_comments(file_name, block_commented, header.constants, comparison_config)
                 assert.are.not_same(expected, buffer_without_date)
@@ -265,9 +271,9 @@ describe("add_headers", function()
     end)
 
     it("should support multiline copyright text as an array", function()
-        for k, v in pairs(filetypes) do
+        for _, ext in ipairs(get_all_extensions()) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-            local file_name = "main." .. k
+            local file_name = "main." .. ext
             vim.fn.setline(1, file_name)
             vim.api.nvim_buf_set_name(0, file_name)
 
@@ -282,28 +288,28 @@ describe("add_headers", function()
                 line_separator = "------",
                 use_block_header = true,
                 copyright_text = {
-                    "Copyright (c) 2023 Your Name",
+                    "Copyright (c) 2026 Your Name",
                     "Your Company",
                     "All rights reserved."
                 },
             }
             header.setup(config)
 
-            header.add_headers()
+            header.add_header()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-            local comments = v()
-            local expected = build_extended_expected_comments(file_name, comments, header.constants, config)
-            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+            local lang = languages[ext]()
+            local expected = build_extended_expected_comments(file_name, lang.comment_style, header.constants, config)
+            local buffer_without_date = get_buffer_without_date(buffer, lang.comment_style, header.constants)
 
             assert.are.same(expected, buffer_without_date)
         end
     end)
 
     it("should support multiline copyright text as a string with '\\n' separators", function()
-        for k, v in pairs(filetypes) do
+        for _, ext in ipairs(get_all_extensions()) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-            local file_name = "main." .. k
+            local file_name = "main." .. ext
             vim.fn.setline(1, file_name)
             vim.api.nvim_buf_set_name(0, file_name)
 
@@ -317,57 +323,57 @@ describe("add_headers", function()
                 date_modified_fmt = "%Y-%m-%d %H:%M:%S",
                 line_separator = "------",
                 use_block_header = true,
-                copyright_text = "Copyright (c) 2023 Your Name\nYour Company\nAll rights reserved."
+                copyright_text = "Copyright (c) 2026 Your Name\nYour Company\nAll rights reserved."
             }
 
             header.setup(config)
-            header.add_headers()
+            header.add_header()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-            local comments = v()
-            local expected = build_extended_expected_comments(file_name, comments, header.constants, config)
-            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+            local lang = languages[ext]()
+            local expected = build_extended_expected_comments(file_name, lang.comment_style, header.constants, config)
+            local buffer_without_date = get_buffer_without_date(buffer, lang.comment_style, header.constants)
 
             assert.are.same(expected, buffer_without_date)
         end
     end)
 
     it("should use full path when file_full_path is true", function()
-        for k, v in pairs(filetypes) do
+        for _, ext in ipairs(get_all_extensions()) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-            local file_name = "main." .. k
+            local file_name = "main." .. ext
             local full_path = "/home/user/projects/myproject/" .. file_name
             vim.fn.setline(1, file_name)
             vim.api.nvim_buf_set_name(0, full_path)
 
             header.setup({ file_full_path = true })
-            header.add_headers()
+            header.add_header()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-            local comments = v()
-            local expected = build_minimal_expected_comments(full_path, comments)
+            local lang = languages[ext]()
+            local expected = build_minimal_expected_comments(full_path, lang.comment_style)
             expected[#expected] = file_name
-            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+            local buffer_without_date = get_buffer_without_date(buffer, lang.comment_style, header.constants)
 
             assert.are.same(expected, buffer_without_date)
         end
     end)
 
     it("should use filename only when file_full_path is false (default)", function()
-        for k, v in pairs(filetypes) do
+        for _, ext in ipairs(get_all_extensions()) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-            local file_name = "main." .. k
+            local file_name = "main." .. ext
             local full_path = "/home/user/projects/myproject/" .. file_name
             vim.fn.setline(1, file_name)
             vim.api.nvim_buf_set_name(0, full_path)
 
             header.setup({ file_full_path = false })
-            header.add_headers()
+            header.add_header()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-            local comments = v()
-            local expected = build_minimal_expected_comments(file_name, comments)
-            local buffer_without_date = get_buffer_without_date(buffer, comments, header.constants)
+            local lang = languages[ext]()
+            local expected = build_minimal_expected_comments(file_name, lang.comment_style)
+            local buffer_without_date = get_buffer_without_date(buffer, lang.comment_style, header.constants)
 
             assert.are.same(expected, buffer_without_date)
         end

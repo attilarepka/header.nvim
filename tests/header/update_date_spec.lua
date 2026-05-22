@@ -1,6 +1,6 @@
 require("plenary.reload").reload_module("header", true)
 local header = require("header")
-local filetypes = require("header.filetypes")
+local languages = require("header.languages")
 
 local function get_modified_date(buffer)
     for i, line in ipairs(buffer) do
@@ -8,6 +8,14 @@ local function get_modified_date(buffer)
             return buffer[i]
         end
     end
+end
+
+local function get_all_extensions()
+    local exts = {}
+    for ext, _ in pairs(languages) do
+        table.insert(exts, ext)
+    end
+    return exts
 end
 
 describe("update_date_modified", function()
@@ -19,9 +27,9 @@ describe("update_date_modified", function()
     after_each(function() os.date = os_module end)
 
     it("should update existing header modified time", function()
-        for k, _ in pairs(filetypes) do
+        for _, ext in ipairs(get_all_extensions()) do
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-            local file_name = "main." .. k
+            local file_name = "main." .. ext
             vim.fn.setline(1, file_name)
             vim.api.nvim_buf_set_name(0, file_name)
 
@@ -38,7 +46,7 @@ describe("update_date_modified", function()
                 copyright_text = "test_copyright",
             }
             header.setup(config)
-            header.add_headers()
+            header.add_header()
 
             local buffer_old = vim.api.nvim_buf_get_lines(0, 0, -1, false)
             os.date = os_date

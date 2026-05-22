@@ -12,6 +12,7 @@
 - Use `LICENCE` file from git repository, see [here](#use-license-file-from-git-repository)
 - Project specific configuration, see [here](#project-specific-configuration)
 - Keybindings, see [here](#keybindings)
+- Context-aware languages: Headers after shebangs (Bash/Python), PHP opening tags, encoding declarations, etc.
 
 ## Prerequisites
 
@@ -85,7 +86,7 @@ require("header").setup({
     line_separator = "------",
     use_block_header = false,
     copyright_text = {
-      "Copyright (c) 2023 Your Name",
+      "Copyright (c) 2026 Your Name",
       "Your Company",
       "All rights reserved."
     },
@@ -145,7 +146,7 @@ The default configuration can be overwritten by a local project `.header.nvim` f
   "line_separator": "------",
   "use_block_header": true,
   "copyright_text": [
-    "Copyright (c) 2023 Your Name",
+    "Copyright (c) 2026 Your Name",
     "Your Company",
     "All rights reserved."
   ]
@@ -159,9 +160,112 @@ To setup custom keybindings:
 ```lua
 local header = require("header")
 
-vim.keymap.set("n", "<leader>hh", function() header.add_headers() end)
+vim.keymap.set("n", "<leader>hh", function() header.add_header() end)
 -- see supported licenses below, method handles case-insensitively
 vim.keymap.set("n", "<leader>hm", function() header.add_license_header("mit") end)
+```
+
+## Supported Languages
+
+### Simple Languages
+
+Headers are inserted at the beginning of the file (or after existing headers).
+
+- C / C++
+- Java
+- JavaScript
+- TypeScript
+- C#
+- Swift
+- Kotlin
+- Scala
+- Go
+- Rust
+- Groovy
+- Dart
+- Lua
+- Ruby
+- Perl
+- Haskell
+- CoffeeScript
+- R
+
+---
+
+### Context-Aware Languages
+
+Headers are intelligently placed according to language-specific rules.
+
+#### Bash / Shell (`sh`, `bash`, `zsh`)
+
+Headers are inserted after the shebang:
+
+```bash
+#!/bin/bash
+# Copyright (c) 2026 Your Name
+# License information
+
+echo "Hello, World!"
+```
+
+If no shebang exists, the header is placed at the top of the file.
+
+---
+
+#### Python (`py`)
+
+Headers are inserted after the shebang and encoding declaration:
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Copyright (c) 2026 Your Name
+# License information
+
+import os
+```
+
+Both encoding declaration styles are supported:
+
+```python
+# coding: utf-8
+```
+
+```python
+# -*- coding: utf-8 -*-
+```
+
+---
+
+#### PHP (`php`)
+
+Headers are inserted inside the PHP opening tag:
+
+```php
+<?php
+/*
+ * Copyright (c) 2026 Your Name
+ * License information
+ */
+
+echo "Hello, World!";
+```
+
+If no PHP opening tag exists, insertion will fail to avoid generating invalid PHP files.
+
+---
+
+#### HTML (`html`)
+
+Uses HTML comment syntax:
+
+```html
+<!--
+Copyright (c) 2026 Your Name
+License information
+-->
+
+<!DOCTYPE html>
 ```
 
 ## Commands
@@ -236,9 +340,9 @@ autocmd({ "BufNewFile", "BufReadPost" }, {
       local original_fmt = header.config.date_created_fmt
       local now = os.date(header.config.date_created_fmt, os.time())
 
-      -- force add_headers to use the current datetime, otherwise it will show 1970-01-01
+      -- force add_header to use the current datetime, otherwise it will show 1970-01-01
       header.config.date_created_fmt = now
-      header.add_headers()
+      header.add_header()
 
       header.config.date_created_fmt = original_fmt -- restore the original format
     end

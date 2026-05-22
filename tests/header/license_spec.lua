@@ -45,4 +45,90 @@ describe("add_license_header", function()
 
         assert.are.same(expected, buffer)
     end)
+
+    it("should replace existing header with license header", function()
+        local config = { author = "test_author" }
+        header.setup(config)
+
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+        local file_name = "main.py"
+        vim.fn.setline(1, file_name)
+        vim.api.nvim_buf_set_name(0, file_name)
+
+        header.add_header()
+
+        local buffer_with_header = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+        assert.is_true(#buffer_with_header > 0)
+        assert.is_true(buffer_with_header[1]:find("main.py") ~= nil)
+
+        header.add_license_header("mit")
+
+        local buffer_with_license = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+        local has_old_header = false
+        for _, line in ipairs(buffer_with_license) do
+            if line:find("File name:") then
+                has_old_header = true
+                break
+            end
+        end
+        assert.is_false(has_old_header, "Old header should be removed when adding license")
+
+        local has_license = false
+        for _, line in ipairs(buffer_with_license) do
+            if line:find("Permission is hereby granted") then
+                has_license = true
+                break
+            end
+        end
+        assert.is_true(has_license, "License text should be present")
+
+        assert.are.equal(file_name, buffer_with_license[#buffer_with_license])
+    end)
+
+    it("should replace header with license in context-aware language (python with shebang)", function()
+        local config = { author = "test_author" }
+        header.setup(config)
+
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+        local file_name = "script.py"
+        vim.fn.setline(1, file_name)
+        vim.api.nvim_buf_set_name(0, file_name)
+
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, {
+            "#!/usr/bin/env python3",
+            "# File name: script.py",
+            "# Date created: 2026-01-01",
+            "# ------",
+            "",
+            "import os",
+            "print('hello')",
+        })
+
+        header.add_license_header("mit")
+
+        local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+        assert.are.equal("#!/usr/bin/env python3", buffer[1])
+
+        assert.is_true(buffer[2]:find("Copyright") ~= nil or buffer[2]:find("#") ~= nil)
+
+        local has_old_header = false
+        for _, line in ipairs(buffer) do
+            if line:find("File name:") then
+                has_old_header = true
+                break
+            end
+        end
+        assert.is_false(has_old_header, "Old header should be removed")
+
+        local has_import = false
+        for _, line in ipairs(buffer) do
+            if line:find("import os") then
+                has_import = true
+                break
+            end
+        end
+        assert.is_true(has_import, "Original code should be preserved")
+    end)
 end)

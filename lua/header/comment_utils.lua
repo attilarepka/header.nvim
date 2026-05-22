@@ -1,14 +1,14 @@
 local util = require("header.util")
 local M = {}
 
-function M.comment_headers(headers, comments, use_block_header)
+function M.render_header(headers, comment_style, use_block_header)
     local style
-    if use_block_header and comments.block and comments.block.start then
-        style = comments.block
-    elseif comments.line and comments.line.line then
-        style = comments.line
+    if use_block_header and comment_style.block and comment_style.block.start then
+        style = comment_style.block
+    elseif comment_style.line and comment_style.line.line then
+        style = comment_style.line
     else
-        style = comments.block or comments.line
+        style = comment_style.block or comment_style.line
     end
 
     local result = {}

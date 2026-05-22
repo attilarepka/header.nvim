@@ -1,150 +1,81 @@
-local languages = {}
+local comment_styles = require("header.comment_styles")
 
-languages.cpp = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
+local M = {}
+
+local function make_language(comment_style, resolve_fn)
+    return function()
+        return {
+            comment_style = comment_style,
+            resolve_insertion = resolve_fn or function()
+                return { ok = true, insert_line = 0 }
+            end,
+        }
+    end
 end
 
-languages.python = function()
-    return {
-        block = nil,
-        line = { start = nil, line = "#", ["end"] = nil },
-    }
-end
+M.c = make_language(comment_styles.cstyle)
+M.cc = make_language(comment_styles.cstyle)
+M.cpp = make_language(comment_styles.cstyle)
+M.h = make_language(comment_styles.cstyle)
+M.hh = make_language(comment_styles.cstyle)
+M.hpp = make_language(comment_styles.cstyle)
+M.java = make_language(comment_styles.cstyle)
+M.js = make_language(comment_styles.cstyle)
+M.ts = make_language(comment_styles.cstyle)
+M.tsx = make_language(comment_styles.cstyle)
+M.cs = make_language(comment_styles.cstyle)
+M.swift = make_language(comment_styles.cstyle)
+M.kt = make_language(comment_styles.cstyle)
+M.sc = make_language(comment_styles.cstyle)
+M.go = make_language(comment_styles.cstyle)
+M.rs = make_language(comment_styles.cstyle)
+M.groovy = make_language(comment_styles.cstyle)
+M.gvy = make_language(comment_styles.cstyle)
+M.gy = make_language(comment_styles.cstyle)
+M.gsh = make_language(comment_styles.cstyle)
+M.dart = make_language(comment_styles.cstyle)
 
-languages.lua = function()
-    return {
-        block = { start = "--[[", line = "--", ["end"] = "--]]" },
-        line = { start = nil, line = "--", ["end"] = nil },
-    }
-end
+M.robot = make_language(comment_styles.hash)
+M.r = make_language(comment_styles.hash)
 
-languages.java = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
+M.lua = make_language(comment_styles.lua)
 
-languages.javascript = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
+M.html = make_language(comment_styles.html)
 
-languages.csharp = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
+M.hs = make_language(comment_styles.haskell)
+M.lhs = make_language(comment_styles.haskell)
 
-languages.swift = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
+M.rb = make_language(comment_styles.ruby)
+M.pl = make_language(comment_styles.ruby)
 
-languages.ruby = function()
-    return {
-        block = { start = "=begin", line = "#", ["end"] = "=end" },
-        line = { start = nil, line = "#", ["end"] = nil },
-    }
-end
+M.coffee = make_language(comment_styles.coffee)
 
-languages.kotlin = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
+M.php = make_language(comment_styles.cstyle, function(lines)
+    for i, line in ipairs(lines) do
+        if line:match("^%s*<%?php") or line:match("^%s*<%?") then
+            return { ok = true, insert_line = i }
+        end
+    end
+    return { ok = true, insert_line = 0 }
+end)
 
-languages.scala = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
+M.sh = make_language(comment_styles.hash, function(lines)
+    if lines[1] and lines[1]:match("^#!") then
+        return { ok = true, insert_line = 1 }
+    end
+    return { ok = true, insert_line = 0 }
+end)
 
-languages.go = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
+M.py = make_language(comment_styles.hash, function(lines)
+    local insert_line = 0
+    if lines[1] and lines[1]:match("^#!") then
+        insert_line = 1
+    end
+    local next_line = lines[insert_line + 1]
+    if next_line and next_line:match("coding[:=]") then
+        insert_line = insert_line + 1
+    end
+    return { ok = true, insert_line = insert_line }
+end)
 
-languages.rust = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
-
-languages.php = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
-
-languages.shell = function()
-    return {
-        block = nil,
-        line = { start = nil, line = "#", ["end"] = nil },
-    }
-end
-
-languages.haskell = function()
-    return {
-        block = { start = "{-", line = "--", ["end"] = "-}" },
-        line = { start = nil, line = "--", ["end"] = nil },
-    }
-end
-
-languages.perl = function()
-    return {
-        block = { start = "=begin", line = "#", ["end"] = "=cut" },
-        line = { start = nil, line = "#", ["end"] = nil },
-    }
-end
-
-languages.typescript = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
-
-languages.coffeescript = function()
-    return {
-        block = { start = "###", line = "#", ["end"] = "###" },
-        line = { start = nil, line = "#", ["end"] = nil },
-    }
-end
-
-languages.groovy = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
-
-languages.dart = function()
-    return {
-        block = { start = "/*", line = "*", ["end"] = "*/" },
-        line = { start = nil, line = "//", ["end"] = nil },
-    }
-end
-
-languages.r = function()
-    return {
-        block = nil,
-        line = { start = nil, line = "#", ["end"] = nil },
-    }
-end
-
-return languages
+return M
