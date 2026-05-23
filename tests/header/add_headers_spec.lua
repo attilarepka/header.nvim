@@ -1,6 +1,7 @@
 require("plenary.reload").reload_module("header", true)
 local header = require("header")
 local languages = require("header.languages")
+local config_mod = require("header.config")
 
 local function get_buffer_without_date(buffer, comment_style, constants)
     local style
@@ -15,8 +16,8 @@ local function get_buffer_without_date(buffer, comment_style, constants)
     local result = {}
     for _, line in ipairs(buffer) do
         if
-            not line:match("^%" .. style.line .. " " .. constants.date_created)
-            and not line:match("^%" .. style.line .. " " .. constants.date_modified)
+            not line:match("^%" .. style.line .. " " .. config_mod.get_label(header.config, constants, "date_created"))
+            and not line:match("^%" .. style.line .. " " .. config_mod.get_label(header.config, constants, "date_modified"))
         then
             table.insert(result, line)
         end
@@ -35,7 +36,7 @@ local function build_minimal_expected_comments(file_name, comment_style)
     end
 
     local result = {
-        style.line .. " " .. header.constants.file_name .. " " .. file_name,
+        style.line .. " " .. header.config_mod.get_label(header.config, constants, "file_name") .. " " .. file_name,
         style.line .. " " .. header.config.line_separator,
         "",
         file_name,
@@ -44,7 +45,7 @@ local function build_minimal_expected_comments(file_name, comment_style)
     if style.start and style["end"] then
         result = {
             style.start,
-            style.line .. " " .. header.constants.file_name .. " " .. file_name,
+            style.line .. " " .. header.config_mod.get_label(header.config, constants, "file_name") .. " " .. file_name,
             style.line .. " " .. header.config.line_separator,
             style["end"],
             "",
@@ -85,9 +86,9 @@ local function build_extended_expected_comments(file_name, comment_style, consta
         table.insert(result, style.start)
     end
 
-    table.insert(result, style.line .. " " .. constants.file_name .. " " .. file_name)
-    table.insert(result, style.line .. " " .. constants.project .. " " .. config.project)
-    table.insert(result, style.line .. " " .. constants.author .. " " .. config.author)
+    table.insert(result, style.line .. " " .. config_mod.get_label(header.config, constants, "file_name") .. " " .. file_name)
+    table.insert(result, style.line .. " " .. config_mod.get_label(header.config, constants, "project") .. " " .. config.project)
+    table.insert(result, style.line .. " " .. config_mod.get_label(header.config, constants, "author") .. " " .. config.author)
     table.insert(result, style.line .. " " .. config.line_separator)
     append_copyright_lines(config.copyright_text)
 
