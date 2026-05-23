@@ -34,10 +34,16 @@ header.reset = function()
     header.config = vim.deepcopy(config.defaults)
 end
 
-header.add_headers = function()
+header.add_header = function()
     if check_vim_version() then
-        core.add_headers(header)
+        core.add_header(header)
     end
+end
+
+header.add_headers = function()
+    vim.notify_once("header.add_headers() is deprecated, use header.add_header() instead", vim.log.levels.WARN)
+
+    return header.add_header()
 end
 
 header.add_license_header = function(opts)

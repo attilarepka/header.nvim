@@ -2,7 +2,7 @@ local M = {}
 
 function M.create_user_commands(header)
     vim.api.nvim_create_user_command("AddHeader", function()
-        header.add_headers()
+        header.add_header()
     end, {})
 
     local licenses = {
