@@ -36,7 +36,7 @@ local function build_minimal_expected_comments(file_name, comment_style)
     end
 
     local result = {
-        style.line .. " " .. header.config_mod.get_label(header.config, constants, "file_name") .. " " .. file_name,
+        style.line .. " " .. config_mod.get_label(header.config, constants, "file_name") .. " " .. file_name,
         style.line .. " " .. header.config.line_separator,
         "",
         file_name,
@@ -45,7 +45,7 @@ local function build_minimal_expected_comments(file_name, comment_style)
     if style.start and style["end"] then
         result = {
             style.start,
-            style.line .. " " .. header.config_mod.get_label(header.config, constants, "file_name") .. " " .. file_name,
+            style.line .. " " .. config_mod.get_label(header.config, constants, "file_name") .. " " .. file_name,
             style.line .. " " .. header.config.line_separator,
             style["end"],
             "",
