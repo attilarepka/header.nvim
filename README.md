@@ -144,13 +144,14 @@ To override the default label text for any header field, use the corresponding `
 
 ```lua
 require("header").setup({
-    file_name_label = "File:",
-    author_label = "Author:",
-    project_label = "Project:",
-    date_created_label = "Created:",
-    date_modified_label = "Modified:",
+    file_name_label = "File",
+    author_label = "Author",
+    project_label = "Project",
+    date_created_label = "Created",
+    date_modified_label = "Modified",
 })
 ```
+The `:` separator is appended automatically by the plugin.
 
 When a `*_label` option is set to `nil` (the default), the built-in label is used.
 

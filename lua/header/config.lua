@@ -23,15 +23,16 @@ M.defaults = {
 }
 
 M.constants = {
-    file_name = "File name:",
-    date_created = "Date created:",
-    author = "Author:",
-    project = "Project:",
-    date_modified = "Date modified:",
+    file_name = "File name",
+    date_created = "Date created",
+    author = "Author",
+    project = "Project",
+    date_modified = "Date modified",
 }
 
 function M.get_label(config, constants, field)
-    return config[field .. "_label"] or constants[field]
+    local label = config[field .. "_label"] or constants[field]
+    return label .. ":"
 end
 
 function M.read_config_file()

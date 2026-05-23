@@ -397,13 +397,13 @@ describe("add_header", function()
             vim.api.nvim_buf_set_name(0, file_name)
 
             header.setup({
-                file_name_label = "Datei:",
+                file_name_label = "Datei",
                 author = "test_author",
-                author_label = "Autor:",
+                author_label = "Autor",
                 project = "test_project",
-                project_label = "Projekt:",
-                date_created_label = "Erstellt:",
-                date_modified_label = "Geändert:",
+                project_label = "Projekt",
+                date_created_label = "Erstellt",
+                date_modified_label = "Geändert",
             })
 
             header.add_header()
