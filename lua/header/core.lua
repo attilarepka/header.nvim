@@ -175,38 +175,4 @@ function M.add_license_header(header, opts)
     vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, rendered)
 end
 
-function M.update_date_modified(header)
-    local lang = resolve_language()
-
-    if not lang then
-        vim.notify("File type not supported for updating header", vim.log.levels.WARN)
-        return
-    end
-
-    local buf = vim.api.nvim_get_current_buf()
-    local lines = vim.api.nvim_buf_get_lines(buf, 0, 30, false)
-    local header_end = comment_utils.find_header_end(lines, lang.comment_style)
-    if not header_end then
-        return
-    end
-
-    local modified = os.date(header.config.date_modified_fmt)
-    local updated = false
-
-    for i = 1, header_end do
-        if lines[i]:find(header.constants.date_modified) then
-            local prefix = (lang.comment_style.line and lang.comment_style.line.line)
-                or (lang.comment_style.block and lang.comment_style.block.line)
-                or ""
-            lines[i] = prefix .. " " .. header.constants.date_modified .. " " .. modified
-            updated = true
-            break
-        end
-    end
-
-    if updated then
-        vim.api.nvim_buf_set_lines(buf, 0, header_end, false, vim.list_slice(lines, 1, header_end))
-    end
-end
-
 return M
