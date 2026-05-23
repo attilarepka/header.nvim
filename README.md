@@ -270,92 +270,139 @@ License information
 
 ## Commands
 
-### Adding Headers
+### Header
 
-- `:AddHeader` Adds brief copyright information
+Insert or update the current file header:
 
-### Adding Licenses
+```vim
+:Header
+```
 
-- `:AddLicenseAGPL3` Adds **AGPL3 License**
-- `:AddLicenseAPACHE` Adds **Apache License**
-- `:AddLicenseBSD2` Adds **BSD2 License**
-- `:AddLicenseBSD3` Adds **BSD3 License**
-- `:AddLicenseCC0` Adds **CC0 License**
-- `:AddLicenseGPL3` Adds **GPL3 License**
-- `:AddLicenseISC` Adds **ISC License**
-- `:AddLicenseMIT` Adds **MIT License**
-- `:AddLicenseMPL` Adds **MPL License**
-- `:AddLicenseUNLICENSE` Adds **Unlicense License**
-- `:AddLicenseWTFPL` Adds **WTFPL License**
-- `:AddLicenseX11` Adds **X11 License**
-- `:AddLicenseZLIB` Adds **ZLIB License**
+### License Headers
 
-## Autocommand for update date modified when saving a file
+Insert or update a license header:
+
+```vim
+:Header mit
+:Header gpl3
+:Header apache
+```
+
+License names are case-insensitive.
+
+### Supported Licenses
+
+- AGPL3
+- Apache
+- BSD2
+- BSD3
+- CC0
+- GPL3
+- ISC
+- MIT
+- MPL
+- Unlicense
+- WTFPL
+- X11
+- ZLIB
+
+## Autocommands
+
+### Update Headers Automatically on Save
+
+Automatically insert or update headers whenever a file is saved:
 
 ```lua
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
-augroup("mygroup", { clear = true })
+augroup("header.nvim", { clear = true })
 
 autocmd("BufWritePre", {
     pattern = "*",
     callback = function()
         local header = require("header")
-        if header and header.update_date_modified then
-            header.update_date_modified()
+
+        if header and header.add_header then
+            header.add_header()
         else
-            vim.notify_once("header.update_date_modified is not available", vim.log.levels.WARN)
+            vim.notify_once(
+                "header.add_header is not available",
+                vim.log.levels.WARN
+            )
         end
     end,
-    group = "mygroup",
-    desc = "Update header's date modified",
+    group = "header.nvim",
+    desc = "Insert or update file header",
 })
 ```
 
-## Autocommand to add a header when entering an empty file, or creating a new file
+This will:
+- insert a header if one does not exist
+- update existing header metadata (such as modification dates)
+
+---
+
+### Automatically Add Headers to New Files
+
+Automatically add a header when opening a new or empty file:
 
 ```lua
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
-augroup("mygroup", { clear = true })
+augroup("header.nvim", { clear = true })
 
 autocmd({ "BufNewFile", "BufReadPost" }, {
-  pattern = "*",
-  callback = function()
-    local header = require("header")
-    if not header then
-      vim.notify_once(
-        "Could not automatically add header to new file: header module couldn't be found",
-        vim.log.levels.ERROR
-      )
-      return
-    end
+    pattern = "*",
+    callback = function()
+        local header = require("header")
 
-    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-    local is_empty = #lines == 1 and lines[1] == ""
+        if not header then
+            vim.notify_once(
+                "Could not automatically add header: header module not found",
+                vim.log.levels.ERROR
+            )
+            return
+        end
 
-    if header.config.allow_autocmds and is_empty then
-      local original_fmt = header.config.date_created_fmt
-      local now = os.date(header.config.date_created_fmt, os.time())
+        local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+        local is_empty = #lines == 1 and lines[1] == ""
 
-      -- force add_header to use the current datetime, otherwise it will show 1970-01-01
-      header.config.date_created_fmt = now
-      header.add_header()
-
-      header.config.date_created_fmt = original_fmt -- restore the original format
-    end
-  end,
-  group = "mygroup",
-  desc = "Add copyright header to new/empty files",
+        if header.config.allow_autocmds and is_empty then
+            header.add_header()
+        end
+    end,
+    group = "header.nvim",
+    desc = "Automatically add header to new files",
 })
-
 ```
 
 ## Contributing
 
-Contributions are welcome! Open a GitHub [Issue](https://github.com/attilarepka/header.nvim/issues/new/choose) or [Pull request](https://github.com/attilarepka/header.nvim/pulls).
+Contributions are welcome!
+
+Please open an issue before working on larger changes to avoid duplicated effort.
+
+Pull requests are accepted for:
+- Bug fixes
+- Performance improvements
+- New language support
+- License/header improvements
+
+### Tests
+
+If your change affects header generation, license handling, or file parsing logic, please include tests or update existing ones.
+
+Make sure all existing tests pass before submitting a PR.
+
+### Development notes
+
+- Keep changes minimal and focused
+- Avoid breaking the public `:Header` API
+- Prefer idempotent behavior (safe to run multiple times)
+
+Open a GitHub [Issue](https://github.com/attilarepka/header.nvim/issues/new/choose) or [Pull request](https://github.com/attilarepka/header.nvim/pulls).
 
 ## License
 

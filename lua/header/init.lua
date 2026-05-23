@@ -52,10 +52,4 @@ header.add_license_header = function(opts)
     end
 end
 
-header.update_date_modified = function()
-    if check_vim_version() then
-        core.update_date_modified(header)
-    end
-end
-
 return header

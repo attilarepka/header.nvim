@@ -9,7 +9,11 @@ Set Height 1000
 Set Padding 20
 
 Hide
-Type "touch main.rs main.cc main.py main.lua"
+Type "touch main.sh main.cc main.py main.php"
+Enter
+Type "echo '<?php\n echo 'SHOWCASE';\n?>' > main.php"
+Enter
+Type "echo '#!/bin/bash\n echo 'SHOWCASE'\n' > main.sh"
 Enter
 Type "echo 'SHOWCASE APACHE LICENSE' > LICENSE-APACHE"
 Enter
@@ -26,14 +30,14 @@ Enter
 Sleep 500ms
 Space
 Type "ff"
-Type "main.rs"
+Type "main.sh"
 Enter
 Hide
 Type ":LspStop"
 Enter
 Sleep 500ms
 Show
-Type@100ms ":AddHeader"
+Type@100ms ":Header"
 Enter
 
 Sleep 500ms
@@ -46,20 +50,20 @@ Type ":LspStop"
 Enter
 Sleep 500ms
 Show
-Type@100ms ":AddHeader"
+Type@100ms ":Header"
 Enter
 
 Sleep 500ms
 Space
 Type "ff"
-Type "main.lua"
+Type "main.php"
 Enter
 Hide
 Type ":LspStop"
 Enter
 Sleep 500ms
 Show
-Type@100ms ":AddLicenseMIT"
+Type@100ms ":Header MIT"
 Enter
 
 Sleep 500ms
@@ -67,6 +71,8 @@ Type ":wqa"
 Enter
 Hide
 Type@1ms "jq '.license_from_file = true' ./vhs/.header.nvim > tmp && mv tmp ./vhs/.header.nvim"
+Enter
+Type@1ms "cp ./vhs/.header.nvim ."
 Enter
 Type "clear"
 Enter
@@ -84,7 +90,7 @@ Type ":LspStop"
 Enter
 Sleep 500ms
 Show
-Type@100ms ":AddHeader"
+Type@100ms ":Header"
 Enter
 Sleep 500ms
 Type@100ms "j"
@@ -95,7 +101,7 @@ Sleep 500ms
 Type ":wqa"
 Enter
 Hide
-Type@1ms "rm main.rs main.cc main.py main.lua LICENSE-APACHE LICENSE-MIT"
+Type@1ms "rm main.sh main.cc main.py main.php LICENSE-APACHE LICENSE-MIT .header.nvim"
 Enter
 Type@1ms "jq '.license_from_file = false' ./vhs/.header.nvim > tmp && mv tmp ./vhs/.header.nvim"
 Enter
