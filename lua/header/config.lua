@@ -15,6 +15,11 @@ M.defaults = {
     copyright_text = nil,
     license_from_file = false,
     author_from_git = false,
+    file_name_label = nil,
+    date_created_label = nil,
+    author_label = nil,
+    project_label = nil,
+    date_modified_label = nil,
 }
 
 M.constants = {
@@ -24,6 +29,10 @@ M.constants = {
     project = "Project:",
     date_modified = "Date modified:",
 }
+
+function M.get_label(config, constants, field)
+    return config[field .. "_label"] or constants[field]
+end
 
 function M.read_config_file()
     local f = io.open(".header.nvim", "r")

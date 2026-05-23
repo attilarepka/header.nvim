@@ -67,7 +67,9 @@ local function build_extended_expected_comments(file_name, comment_style, consta
     local result = {}
 
     local function append_copyright_lines(text)
-        if not text then return end
+        if not text then
+            return
+        end
         if type(text) == "string" then
             for line in text:gmatch("[^\r\n]+") do
                 table.insert(result, style.line .. " " .. line)
@@ -79,7 +81,9 @@ local function build_extended_expected_comments(file_name, comment_style, consta
         end
     end
 
-    if style.start then table.insert(result, style.start) end
+    if style.start then
+        table.insert(result, style.start)
+    end
 
     table.insert(result, style.line .. " " .. constants.file_name .. " " .. file_name)
     table.insert(result, style.line .. " " .. constants.project .. " " .. config.project)
@@ -87,7 +91,9 @@ local function build_extended_expected_comments(file_name, comment_style, consta
     table.insert(result, style.line .. " " .. config.line_separator)
     append_copyright_lines(config.copyright_text)
 
-    if style["end"] then table.insert(result, style["end"]) end
+    if style["end"] then
+        table.insert(result, style["end"])
+    end
 
     table.insert(result, "")
     table.insert(result, file_name)
@@ -262,7 +268,12 @@ describe("add_header", function()
             assert.are.same(expected, buffer_without_date)
 
             -- Only test the difference if language actually has BOTH block and line comment_style
-            if lang.comment_style.line and lang.comment_style.line.line and lang.comment_style.block and lang.comment_style.block.start then
+            if
+                lang.comment_style.line
+                and lang.comment_style.line.line
+                and lang.comment_style.block
+                and lang.comment_style.block.start
+            then
                 expected =
                     build_extended_expected_comments(file_name, block_commented, header.constants, comparison_config)
                 assert.are.not_same(expected, buffer_without_date)
@@ -290,7 +301,7 @@ describe("add_header", function()
                 copyright_text = {
                     "Copyright (c) 2026 Your Name",
                     "Your Company",
-                    "All rights reserved."
+                    "All rights reserved.",
                 },
             }
             header.setup(config)
@@ -323,7 +334,7 @@ describe("add_header", function()
                 date_modified_fmt = "%Y-%m-%d %H:%M:%S",
                 line_separator = "------",
                 use_block_header = true,
-                copyright_text = "Copyright (c) 2026 Your Name\nYour Company\nAll rights reserved."
+                copyright_text = "Copyright (c) 2026 Your Name\nYour Company\nAll rights reserved.",
             }
 
             header.setup(config)
@@ -376,6 +387,47 @@ describe("add_header", function()
             local buffer_without_date = get_buffer_without_date(buffer, lang.comment_style, header.constants)
 
             assert.are.same(expected, buffer_without_date)
+        end
+    end)
+    it("should use custom labels when *_label options are set", function()
+        for _, ext in ipairs(get_all_extensions()) do
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+            local file_name = "main." .. ext
+            vim.fn.setline(1, file_name)
+            vim.api.nvim_buf_set_name(0, file_name)
+
+            header.setup({
+                file_name_label = "Datei:",
+                author = "test_author",
+                author_label = "Autor:",
+                project = "test_project",
+                project_label = "Projekt:",
+                date_created_label = "Erstellt:",
+                date_modified_label = "Geändert:",
+            })
+
+            header.add_header()
+
+            local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+            local found_file_label = false
+            local found_author_label = false
+            local found_project_label = false
+            for _, line in ipairs(buffer) do
+                if line:find("Datei:", 1, true) then
+                    found_file_label = true
+                end
+                if line:find("Autor:", 1, true) then
+                    found_author_label = true
+                end
+                if line:find("Projekt:", 1, true) then
+                    found_project_label = true
+                end
+            end
+
+            assert.is_true(found_file_label)
+            assert.is_true(found_author_label)
+            assert.is_true(found_project_label)
         end
     end)
 end)

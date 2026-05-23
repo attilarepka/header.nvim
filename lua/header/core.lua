@@ -2,6 +2,7 @@ local comment_utils = require("header.comment_utils")
 local util = require("header.util")
 local license = require("header.license")
 local languages = require("header.languages")
+local config_mod = require("header.config")
 
 local M = {}
 
@@ -86,19 +87,30 @@ local function prepare_header_content(header, callback)
 
     local hdrs = {}
     if header.config.file_name then
-        table.insert(hdrs, header.constants.file_name .. " " .. file)
+        table.insert(hdrs, config_mod.get_label(header.config, header.constants, "file_name") .. " " .. file)
     end
     if header.config.project then
-        table.insert(hdrs, header.constants.project .. " " .. header.config.project)
+        table.insert(
+            hdrs,
+            config_mod.get_label(header.config, header.constants, "project") .. " " .. header.config.project
+        )
     end
     if header.config.author then
-        table.insert(hdrs, header.constants.author .. " " .. header.config.author)
+        table.insert(
+            hdrs,
+            config_mod.get_label(header.config, header.constants, "author") .. " " .. header.config.author
+        )
     end
     if header.config.date_created then
-        table.insert(hdrs, header.constants.date_created .. " " .. created)
+        table.insert(hdrs, config_mod.get_label(header.config, header.constants, "date_created") .. " " .. created)
     end
     if header.config.date_modified then
-        table.insert(hdrs, header.constants.date_modified .. " " .. os.date(header.config.date_modified_fmt))
+        table.insert(
+            hdrs,
+            config_mod.get_label(header.config, header.constants, "date_modified")
+                .. " "
+                .. os.date(header.config.date_modified_fmt)
+        )
     end
     if header.config.line_separator then
         table.insert(hdrs, header.config.line_separator)
