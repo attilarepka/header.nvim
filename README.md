@@ -57,6 +57,11 @@ The script comes with the following defaults:
     copyright_text = nil,
     license_from_file = false,
     author_from_git = false,
+    file_name_label = nil,
+    author_label = nil,
+    project_label = nil,
+    date_created_label = nil,
+    date_modified_label = nil,
 }
 ```
 
@@ -92,6 +97,11 @@ require("header").setup({
     },
     license_from_file = false,
     author_from_git = false,
+    file_name_label = nil,
+    author_label = nil,
+    project_label = nil,
+    date_created_label = nil,
+    date_modified_label = nil,
 })
 ```
 
@@ -127,6 +137,22 @@ The following file names are recognized:
 - This feature is useful when working on open-source projects that already include a license file.
 - License headers inserted from a file will be commented automatically based on the current filetype.
 - If you want to override the selected license file or insert a different one later, you can disable and re-enable the plugin, or restart Neovim.
+
+### Custom field labels
+
+To override the default label text for any header field, use the corresponding `*_label` option:
+
+```lua
+require("header").setup({
+    file_name_label = "File:",
+    author_label = "Author:",
+    project_label = "Project:",
+    date_created_label = "Created:",
+    date_modified_label = "Modified:",
+})
+```
+
+When a `*_label` option is set to `nil` (the default), the built-in label is used.
 
 ### Project specific configuration
 
