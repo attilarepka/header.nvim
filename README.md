@@ -167,43 +167,37 @@ vim.keymap.set("n", "<leader>hm", function() header.add_license_header("mit") en
 
 ## Supported Languages
 
-### Simple Languages
+### Standard Languages
 
-Headers are inserted at the beginning of the file (or after existing headers).
+For most languages, headers are inserted at the top of the file (or after existing headers/comments if detected):
 
 - C / C++
 - Java
-- JavaScript
-- TypeScript
+- JavaScript / TypeScript
 - C#
+- Go
+- Rust
 - Swift
 - Kotlin
 - Scala
-- Go
-- Rust
-- Groovy
 - Dart
 - Lua
 - Ruby
 - Perl
 - Haskell
+- Groovy
 - CoffeeScript
 - R
 
 ---
 
-### Context-Aware Languages
+### Bash / Shell (`sh`, `bash`, `zsh`)
 
-Headers are intelligently placed according to language-specific rules.
-
-#### Bash / Shell (`sh`, `bash`, `zsh`)
-
-Headers are inserted after the shebang:
+Headers are inserted after the shebang if present:
 
 ```bash
 #!/bin/bash
 # Copyright (c) 2026 Your Name
-# License information
 
 echo "Hello, World!"
 ```
@@ -212,32 +206,21 @@ If no shebang exists, the header is placed at the top of the file.
 
 ---
 
-#### Python (`py`)
+### Python
 
-Headers are inserted after the shebang and encoding declaration:
+Headers are inserted after shebang and encoding declarations:
 
 ```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Copyright (c) 2026 Your Name
-# License information
 
 import os
 ```
 
-Both encoding declaration styles are supported:
-
-```python
-# coding: utf-8
-```
-
-```python
-# -*- coding: utf-8 -*-
-```
-
 ---
 
-#### PHP (`php`)
+### PHP
 
 Headers are inserted inside the PHP opening tag:
 
@@ -245,24 +228,22 @@ Headers are inserted inside the PHP opening tag:
 <?php
 /*
  * Copyright (c) 2026 Your Name
- * License information
  */
 
-echo "Hello, World!";
+echo "Hello";
 ```
 
-If no PHP opening tag exists, insertion will fail to avoid generating invalid PHP files.
+If no opening tag exists, the header is placed at the top of the file.
 
 ---
 
-#### HTML (`html`)
+### HTML
 
 Uses HTML comment syntax:
 
 ```html
 <!--
 Copyright (c) 2026 Your Name
-License information
 -->
 
 <!DOCTYPE html>
