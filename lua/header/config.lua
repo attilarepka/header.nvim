@@ -31,10 +31,12 @@ M.constants = {
 }
 
 function M.get_label(config, constants, field)
-    local label = config[field .. "_label"] or constants[field]
+function M.get_label(config, constants, field)
+    local label = config[field .. "_label"]
+        or constants[field]
+
     return label .. ":"
 end
-
 function M.read_config_file()
     local f = io.open(".header.nvim", "r")
     if not f then
