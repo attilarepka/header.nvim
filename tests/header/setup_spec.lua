@@ -1,7 +1,9 @@
 local header = require("header")
 
 describe("setup", function()
-    before_each(function() header.reset() end)
+    before_each(function()
+        header.reset()
+    end)
 
     it("setup with default configs", function()
         local expected = {
@@ -19,6 +21,11 @@ describe("setup", function()
             copyright_text = nil,
             license_from_file = false,
             author_from_git = false,
+            file_name_label = nil,
+            date_created_label = nil,
+            author_label = nil,
+            project_label = nil,
+            date_modified_label = nil,
         }
         header.setup()
         assert.are.same(expected, header.config)
@@ -40,6 +47,11 @@ describe("setup", function()
             copyright_text = "test_copyright",
             license_from_file = false,
             author_from_git = false,
+            file_name_label = nil,
+            date_created_label = nil,
+            author_label = nil,
+            project_label = nil,
+            date_modified_label = nil,
         }
         header.setup(expected)
         assert.are.same(expected, header.config)
