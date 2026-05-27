@@ -1,4 +1,4 @@
-local license = [[
+local M = [[
 {{ project }}
 Copyright (C) {{ year }}  {{ organization }}
 
@@ -16,4 +16,4 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-return license
+return M

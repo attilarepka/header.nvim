@@ -1,8 +1,8 @@
-local comment_utils = require("header.comment_utils")
+local renderer = require("header.renderer")
 local util = require("header.util")
 local license = require("header.license")
 local languages = require("header.languages")
-local config_mod = require("header.config")
+local config = require("header.config")
 
 local M = {}
 
@@ -29,7 +29,7 @@ local function remove_old_headers(comment_style, insert_line)
 
     local header_end = insert_line
     for i, line in ipairs(lines) do
-        if not comment_utils.is_comment_line(line, comment_style) and not line:match("^%s*$") then
+        if not renderer.is_comment_line(line, comment_style) and not line:match("^%s*$") then
             header_end = insert_line + i - 1
             break
         end
@@ -87,27 +87,21 @@ local function prepare_header_content(header, callback)
 
     local hdrs = {}
     if header.config.file_name then
-        table.insert(hdrs, config_mod.get_label(header.config, header.constants, "file_name") .. " " .. file)
+        table.insert(hdrs, config.get_label(header.config, header.constants, "file_name") .. " " .. file)
     end
     if header.config.project then
-        table.insert(
-            hdrs,
-            config_mod.get_label(header.config, header.constants, "project") .. " " .. header.config.project
-        )
+        table.insert(hdrs, config.get_label(header.config, header.constants, "project") .. " " .. header.config.project)
     end
     if header.config.author then
-        table.insert(
-            hdrs,
-            config_mod.get_label(header.config, header.constants, "author") .. " " .. header.config.author
-        )
+        table.insert(hdrs, config.get_label(header.config, header.constants, "author") .. " " .. header.config.author)
     end
     if header.config.date_created then
-        table.insert(hdrs, config_mod.get_label(header.config, header.constants, "date_created") .. " " .. created)
+        table.insert(hdrs, config.get_label(header.config, header.constants, "date_created") .. " " .. created)
     end
     if header.config.date_modified then
         table.insert(
             hdrs,
-            config_mod.get_label(header.config, header.constants, "date_modified")
+            config.get_label(header.config, header.constants, "date_modified")
                 .. " "
                 .. os.date(header.config.date_modified_fmt)
         )
@@ -154,7 +148,7 @@ function M.add_header(header)
         end
 
         remove_old_headers(lang.comment_style, insert_line)
-        local rendered = comment_utils.render_header(new_hdrs, lang.comment_style, header.config.use_block_header)
+        local rendered = renderer.render_header(new_hdrs, lang.comment_style, header.config.use_block_header)
         vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, rendered)
     end)
 end
@@ -183,7 +177,7 @@ function M.add_license_header(header, opts)
     license_text = util.replace_all_tokens(license_text, header)
 
     local license_table = util.string_to_table(license_text)
-    local rendered = comment_utils.render_header(license_table, lang.comment_style, header.config.use_block_header)
+    local rendered = renderer.render_header(license_table, lang.comment_style, header.config.use_block_header)
     vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, rendered)
 end
 

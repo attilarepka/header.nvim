@@ -1,4 +1,3 @@
-local util = require("header.util")
 local M = {}
 
 function M.render_header(headers, comment_style, use_block_header)
@@ -29,6 +28,17 @@ function M.render_header(headers, comment_style, use_block_header)
     return result
 end
 
+local function escape_special_characters(pattern)
+    if not pattern then
+        return ""
+    end
+    local special = { "%", "^", "$", "(", ")", ".", "[", "]", "*", "+", "-", "?" }
+    for _, c in ipairs(special) do
+        pattern = pattern:gsub("%" .. c, "%%" .. c)
+    end
+    return pattern
+end
+
 function M.is_comment_line(line, comments)
     if not comments then
         return false
@@ -37,7 +47,7 @@ function M.is_comment_line(line, comments)
 
     local function add(p)
         if p then
-            table.insert(patterns, util.escape_special_characters(p))
+            table.insert(patterns, escape_special_characters(p))
         end
     end
 

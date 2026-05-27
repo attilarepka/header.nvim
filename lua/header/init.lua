@@ -2,7 +2,7 @@ local config = require("header.config")
 local commands = require("header.commands")
 local core = require("header.core")
 
-local header = {
+local M = {
     config = config.defaults,
     constants = config.constants,
     selected_license_file = nil,
@@ -16,40 +16,40 @@ local function check_vim_version()
     return true
 end
 
-header.setup = function(params)
+M.setup = function(params)
     if not check_vim_version() then
         return
     end
-    header.config = vim.tbl_extend("force", header.config, params or {})
+    M.config = vim.tbl_extend("force", M.config, params or {})
 
     local file_cfg = config.read_config_file()
     if file_cfg then
-        header.config = vim.tbl_extend("force", header.config, file_cfg)
+        M.config = vim.tbl_extend("force", M.config, file_cfg)
     end
 
-    commands.create_user_commands(header)
+    commands.create_user_commands(M)
 end
 
-header.reset = function()
-    header.config = vim.deepcopy(config.defaults)
+M.reset = function()
+    M.config = vim.deepcopy(config.defaults)
 end
 
-header.add_header = function()
+M.add_header = function()
     if check_vim_version() then
-        core.add_header(header)
+        core.add_header(M)
     end
 end
 
-header.add_headers = function()
+M.add_headers = function()
     vim.notify_once("header.add_headers() is deprecated, use header.add_header() instead", vim.log.levels.WARN)
 
-    return header.add_header()
+    return M.add_header()
 end
 
-header.add_license_header = function(opts)
+M.add_license_header = function(opts)
     if check_vim_version() then
-        core.add_license_header(header, opts)
+        core.add_license_header(M, opts)
     end
 end
 
-return header
+return M

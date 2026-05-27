@@ -1,4 +1,4 @@
-local license = [[
+local M = [[
 Copyright (c) {{ year }} {{ organization }}
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,4 +20,4 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 OR OTHER DEALINGS IN THE SOFTWARE.
 ]]
 
-return license
+return M

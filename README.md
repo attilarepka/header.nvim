@@ -12,7 +12,7 @@
 - Use `LICENCE` file from git repository, see [here](#use-license-file-from-git-repository)
 - Project specific configuration, see [here](#project-specific-configuration)
 - Keybindings, see [here](#keybindings)
-- Context-aware languages: Headers after shebangs (Bash/Python), PHP opening tags, encoding declarations, etc.
+- Respects shebangs (Bash/Python), PHP opening tags, encoding declarations, etc.
 
 ## Prerequisites
 
@@ -318,8 +318,6 @@ License names are case-insensitive.
 
 ### Update Headers Automatically on Save
 
-Automatically insert or update headers whenever a file is saved:
-
 ```lua
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
@@ -352,8 +350,6 @@ This will:
 ---
 
 ### Automatically Add Headers to New Files
-
-Automatically add a header when opening a new or empty file:
 
 ```lua
 local augroup = vim.api.nvim_create_augroup
