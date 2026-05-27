@@ -21,15 +21,4 @@ function M.replace_all_tokens(license_text, header)
     return license_text
 end
 
-function M.escape_special_characters(pattern)
-    if not pattern then
-        return ""
-    end
-    local special = { "%", "^", "$", "(", ")", ".", "[", "]", "*", "+", "-", "?" }
-    for _, c in ipairs(special) do
-        pattern = pattern:gsub("%" .. c, "%%" .. c)
-    end
-    return pattern
-end
-
 return M

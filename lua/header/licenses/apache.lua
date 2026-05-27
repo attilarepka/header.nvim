@@ -1,4 +1,4 @@
-local license = [[
+local M = [[
 Copyright {{ year }} {{ organization }}
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,4 +14,4 @@ or implied. See the License for the specific language governing
 permissions and limitations under the License.
 ]]
 
-return license
+return M

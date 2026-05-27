@@ -1,4 +1,4 @@
-local license = [[
+local M = [[
 Copyright (c) {{ year }}, {{ organization }}
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -14,4 +14,4 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ]]
 
-return license
+return M

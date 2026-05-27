@@ -1,4 +1,4 @@
-local license = [[
+local M = [[
 Copyright (c) {{ year }} {{ organization }}
 
 This software is provided 'as-is', without any express or implied
@@ -21,4 +21,4 @@ freely, subject to the following restrictions:
    distribution.
 ]]
 
-return license
+return M

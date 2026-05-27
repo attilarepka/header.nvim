@@ -1,4 +1,4 @@
-local license = [[
+local M = [[
 Copyright (C) {{ year }} {{ organization }}
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -28,4 +28,4 @@ from {{ organization }}.
 {{ project }} is a trademark of {{ organization }}.
 ]]
 
-return license
+return M
