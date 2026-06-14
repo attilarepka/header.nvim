@@ -431,4 +431,17 @@ describe("add_header", function()
             assert.is_true(found_project_label)
         end
     end)
+	it("should not error on unsupported file type", function()
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+        vim.api.nvim_buf_set_name(0, "config")
+        vim.bo.filetype = "sshconfig"
+
+        local ok, err = pcall(function()
+            header.add_header()
+        end)
+
+        assert.is_true(ok)
+        local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+        assert.are.same({ "" }, buffer)
+    end)
 end)

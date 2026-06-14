@@ -9,11 +9,15 @@ local M = {}
 local function resolve_language()
     local ext = vim.fn.expand("%:e")
     local lang_fn = languages[ext]
-
+    if lang_fn then
+        return lang_fn()
+    end
+    -- Fallback: try filetype
+    local ft = vim.bo.filetype
+    lang_fn = languages[ft]
     if not lang_fn then
         return nil
     end
-
     return lang_fn()
 end
 
