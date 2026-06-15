@@ -35,6 +35,9 @@ M.gy = make_language(comment_styles.cstyle)
 M.gsh = make_language(comment_styles.cstyle)
 M.dart = make_language(comment_styles.cstyle)
 
+M.yml = make_language(comment_styles.hash)
+M.yaml = make_language(comment_styles.hash)
+
 M.robot = make_language(comment_styles.hash)
 M.r = make_language(comment_styles.hash)
 
