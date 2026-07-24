@@ -1,7 +1,7 @@
 local M = {}
 
 function M.scan_license_files()
-    local names = {
+    local patterns = {
         "^LICENSE$",
         "^LICENSE%.md$",
         "^LICENSE%-.*$",
@@ -19,20 +19,27 @@ function M.scan_license_files()
     }
 
     local found = {}
-    local p = io.popen("ls -a")
-    if not p then
+    local handle = vim.loop.fs_scandir(vim.loop.cwd())
+    if not handle then
         return found
     end
 
-    for f in p:lines() do
-        for _, pat in ipairs(names) do
-            if f:match(pat) then
-                table.insert(found, f)
-                break
+    while true do
+        local name, type = vim.loop.fs_scandir_next(handle)
+        if not name then
+            break
+        end
+
+        if type == "file" then
+            for _, pattern in ipairs(patterns) do
+                if name:match(pattern) then
+                    table.insert(found, name)
+                    break
+                end
             end
         end
     end
-    p:close()
+
     return found
 end
 
