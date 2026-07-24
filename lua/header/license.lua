@@ -95,24 +95,38 @@ function M.select_license_file(options, callback, header)
         callback(nil)
     end
 
-    local function map(k, f)
-        vim.api.nvim_buf_set_keymap(buf, "n", k, "", { callback = f, noremap = true, silent = true })
-    end
+    local keymaps = {
+        {
+            "j",
+            function()
+                move(1)
+            end,
+        },
+        {
+            "k",
+            function()
+                move(-1)
+            end,
+        },
+        {
+            "<down>",
+            function()
+                move(1)
+            end,
+        },
+        {
+            "<up>",
+            function()
+                move(-1)
+            end,
+        },
+        { "<cr>", select },
+        { "q", quit },
+    }
 
-    map("j", function()
-        move(1)
-    end)
-    map("k", function()
-        move(-1)
-    end)
-    map("<down>", function()
-        move(1)
-    end)
-    map("<up>", function()
-        move(-1)
-    end)
-    map("<cr>", select)
-    map("q", quit)
+    for _, keymap in ipairs(keymaps) do
+        vim.api.nvim_buf_set_keymap(buf, "n", keymap[1], "", { callback = keymap[2], noremap = true, silent = true })
+    end
 
     vim.bo[buf].modifiable = false
     vim.bo[buf].bufhidden = "wipe"
