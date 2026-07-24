@@ -86,9 +86,12 @@ local function build_extended_expected_comments(file_name, comment_style, consta
         table.insert(result, style.start)
     end
 
-    table.insert(result, style.line .. " " .. config_mod.get_label(header.config, header.constants, "file_name") .. " " .. file_name)
-    table.insert(result, style.line .. " " .. config_mod.get_label(header.config, constants, "project") .. " " .. config.project)
-    table.insert(result, style.line .. " " .. config_mod.get_label(header.config, constants, "author") .. " " .. config.author)
+    table.insert(result,
+        style.line .. " " .. config_mod.get_label(header.config, header.constants, "file_name") .. " " .. file_name)
+    table.insert(result,
+        style.line .. " " .. config_mod.get_label(header.config, constants, "project") .. " " .. config.project)
+    table.insert(result,
+        style.line .. " " .. config_mod.get_label(header.config, constants, "author") .. " " .. config.author)
     table.insert(result, style.line .. " " .. config.line_separator)
     append_copyright_lines(config.copyright_text)
 
@@ -430,5 +433,18 @@ describe("add_header", function()
             assert.is_true(found_author_label)
             assert.is_true(found_project_label)
         end
+    end)
+    it("should not error on unsupported file type", function()
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+        vim.api.nvim_buf_set_name(0, "config")
+        vim.bo.filetype = "sshconfig"
+
+        local ok, err = pcall(function()
+            header.add_header()
+        end)
+
+        assert.is_true(ok)
+        local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+        assert.are.same({ "" }, buffer)
     end)
 end)
