@@ -16,7 +16,7 @@ end
 
 function M.replace_all_tokens(license_text, header)
     license_text = replace_token(license_text, "project", header.config.project)
-    license_text = replace_token(license_text, "organization", header.config.author)
+    license_text = replace_token(license_text, "author", header.config.author)
     license_text = replace_token(license_text, "year", os.date("%Y"))
     return license_text
 end

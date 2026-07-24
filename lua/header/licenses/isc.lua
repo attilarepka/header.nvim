@@ -1,5 +1,5 @@
 local M = [[
-Copyright (c) {{ year }}, {{ organization }}
+Copyright (c) {{ year }}, {{ author }}
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

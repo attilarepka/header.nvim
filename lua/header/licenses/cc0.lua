@@ -1,5 +1,5 @@
 local M = [[
-{{ project }} by {{ organization }}
+{{ project }} by {{ author }}
 
 To the extent possible under law, the person who associated CC0 with
 {{ project }} has waived all copyright and related or neighboring rights
