@@ -1,5 +1,5 @@
 local M = [[
-Copyright (c) {{ year }}, {{ organization }}
+Copyright (c) {{ year }}, {{ author }}
 
 All rights reserved.
 

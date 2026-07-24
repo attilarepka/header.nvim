@@ -1,5 +1,5 @@
 local M = [[
-Copyright (C) {{ year }} {{ organization }}
+Copyright (C) {{ year }} {{ author }}
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -15,17 +15,17 @@ included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL {{ organization }} BE LIABLE FOR ANY
+NONINFRINGEMENT. IN NO EVENT SHALL {{ author }} BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Except as contained in this notice, the name of {{ organization }} shall
+Except as contained in this notice, the name of {{ author }} shall
 not be used in advertising or otherwise to promote the sale, use or
 other dealings in this Software without prior written authorization
-from {{ organization }}.
+from {{ author }}.
 
-{{ project }} is a trademark of {{ organization }}.
+{{ project }} is a trademark of {{ author }}.
 ]]
 
 return M
