@@ -52,6 +52,37 @@ local function remove_old_headers(comment_style, insert_line)
     end
 end
 
+local function resolve_header_setup()
+    local lang = resolve_language()
+    if not lang then
+        vim.notify_once("unsupported file type for adding header", vim.log.levels.ERROR)
+        return nil
+    end
+
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local placement = lang.resolve_insertion(lines)
+
+    if not placement.ok then
+        vim.notify(placement.error, vim.log.levels.ERROR)
+        return nil
+    end
+
+    return {
+        lang = lang,
+        insert_line = placement.insert_line,
+    }
+end
+
+local function insert_rendered_header(setup, hdrs, header)
+    if not hdrs or not setup then
+        return
+    end
+
+    remove_old_headers(setup.lang.comment_style, setup.insert_line)
+    local rendered = renderer.render_header(hdrs, setup.lang.comment_style, header.config.use_block_header)
+    vim.api.nvim_buf_set_lines(0, setup.insert_line, setup.insert_line, false, rendered)
+end
+
 local function prepare_header_content(header, callback)
     if header.config.author_from_git then
         local gitname = vim.fn.systemlist("git config user.name")
@@ -124,22 +155,10 @@ local function prepare_header_content(header, callback)
 end
 
 function M.add_header(header)
-    local lang = resolve_language()
-
-    if not lang then
-        vim.notify_once("unsupported file type for adding header", vim.log.levels.ERROR)
+    local setup = resolve_header_setup()
+    if not setup then
         return
     end
-
-    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-    local placement = lang.resolve_insertion(lines)
-
-    if not placement.ok then
-        vim.notify(placement.error, vim.log.levels.ERROR)
-        return
-    end
-
-    local insert_line = placement.insert_line
 
     prepare_header_content(header, function(hdrs)
         if not hdrs then
@@ -151,38 +170,21 @@ function M.add_header(header)
             new_hdrs[i] = util.replace_all_tokens(line, header)
         end
 
-        remove_old_headers(lang.comment_style, insert_line)
-        local rendered = renderer.render_header(new_hdrs, lang.comment_style, header.config.use_block_header)
-        vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, rendered)
+        insert_rendered_header(setup, new_hdrs, header)
     end)
 end
 
 function M.add_license_header(header, opts)
-    local lang = resolve_language()
-
-    if not lang then
-        vim.notify_once("unsupported file type for adding header", vim.log.levels.ERROR)
+    local setup = resolve_header_setup()
+    if not setup then
         return
     end
-
-    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-    local placement = lang.resolve_insertion(lines)
-
-    if not placement.ok then
-        vim.notify(placement.error, vim.log.levels.ERROR)
-        return
-    end
-
-    local insert_line = placement.insert_line
-
-    remove_old_headers(lang.comment_style, insert_line)
 
     local license_text = require("header.licenses." .. string.lower(opts))
     license_text = util.replace_all_tokens(license_text, header)
 
     local license_table = util.string_to_table(license_text)
-    local rendered = renderer.render_header(license_table, lang.comment_style, header.config.use_block_header)
-    vim.api.nvim_buf_set_lines(0, insert_line, insert_line, false, rendered)
+    insert_rendered_header(setup, license_table, header)
 end
 
 return M
