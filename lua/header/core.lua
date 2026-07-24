@@ -83,34 +83,35 @@ local function insert_rendered_header(setup, hdrs, header)
     vim.api.nvim_buf_set_lines(0, setup.insert_line, setup.insert_line, false, rendered)
 end
 
-local function prepare_header_content(header, callback)
+local function prepare_author(header)
     if header.config.author_from_git then
         local gitname = vim.fn.systemlist("git config user.name")
         if vim.v.shell_error == 0 and #gitname > 0 then
             header.config.author = gitname[1]
         end
     end
+end
 
-    if header.config.license_from_file then
-        local files = license.scan_license_files()
-        if #files == 0 then
-            callback(nil)
-            return
-        end
-        if #files == 1 then
-            callback(license.read_license_file(files[1]))
-            return
-        end
-        if header.selected_license_file then
-            callback(license.read_license_file(header.selected_license_file))
-            return
-        end
-        license.select_license_file(files, function(f)
-            callback(f and license.read_license_file(f) or nil)
-        end, header)
+local function prepare_license_content(header, callback)
+    local files = license.scan_license_files()
+    if #files == 0 then
+        callback(nil)
         return
     end
+    if #files == 1 then
+        callback(license.read_license_file(files[1]))
+        return
+    end
+    if header.selected_license_file then
+        callback(license.read_license_file(header.selected_license_file))
+        return
+    end
+    license.select_license_file(files, function(f)
+        callback(f and license.read_license_file(f) or nil)
+    end, header)
+end
 
+local function build_metadata_header(header)
     local file
     if header.config.file_full_path then
         file = vim.fn.expand("%:p")
@@ -151,7 +152,18 @@ local function prepare_header_content(header, callback)
             vim.list_extend(hdrs, header.config.copyright_text)
         end
     end
-    callback(hdrs)
+    return hdrs
+end
+
+local function prepare_header_content(header, callback)
+    prepare_author(header)
+
+    if header.config.license_from_file then
+        prepare_license_content(header, callback)
+        return
+    end
+
+    callback(build_metadata_header(header))
 end
 
 function M.add_header(header)
