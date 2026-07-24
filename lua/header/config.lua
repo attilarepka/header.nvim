@@ -40,12 +40,27 @@ function M.read_config_file()
     if not f then
         return nil
     end
-    local content = f:read("*a")
+    local ok, content = pcall(function()
+        return f:read("*a")
+    end)
     f:close()
+
+    if not ok then
+        vim.notify("header.nvim: failed to read .header.nvim", vim.log.levels.WARN)
+        return nil
+    end
+
     if not content or content == "" then
         return nil
     end
-    return vim.fn.json_decode(content)
+
+    local ok_decode, decoded = pcall(vim.fn.json_decode, content)
+    if not ok_decode then
+        vim.notify("header.nvim: invalid JSON in .header.nvim: " .. decoded, vim.log.levels.WARN)
+        return nil
+    end
+
+    return decoded
 end
 
 return M
