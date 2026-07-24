@@ -13,45 +13,44 @@ local function make_language(comment_style, resolve_fn)
     end
 end
 
-M.c = make_language(comment_styles.cstyle)
-M.cc = make_language(comment_styles.cstyle)
-M.cpp = make_language(comment_styles.cstyle)
-M.h = make_language(comment_styles.cstyle)
-M.hh = make_language(comment_styles.cstyle)
-M.hpp = make_language(comment_styles.cstyle)
-M.java = make_language(comment_styles.cstyle)
-M.js = make_language(comment_styles.cstyle)
-M.ts = make_language(comment_styles.cstyle)
-M.tsx = make_language(comment_styles.cstyle)
-M.cs = make_language(comment_styles.cstyle)
-M.swift = make_language(comment_styles.cstyle)
-M.kt = make_language(comment_styles.cstyle)
-M.sc = make_language(comment_styles.cstyle)
-M.go = make_language(comment_styles.cstyle)
-M.rs = make_language(comment_styles.cstyle)
-M.groovy = make_language(comment_styles.cstyle)
-M.gvy = make_language(comment_styles.cstyle)
-M.gy = make_language(comment_styles.cstyle)
-M.gsh = make_language(comment_styles.cstyle)
-M.dart = make_language(comment_styles.cstyle)
+local simple_languages = {
+    { "c", comment_styles.cstyle },
+    { "cc", comment_styles.cstyle },
+    { "cpp", comment_styles.cstyle },
+    { "h", comment_styles.cstyle },
+    { "hh", comment_styles.cstyle },
+    { "hpp", comment_styles.cstyle },
+    { "java", comment_styles.cstyle },
+    { "js", comment_styles.cstyle },
+    { "ts", comment_styles.cstyle },
+    { "tsx", comment_styles.cstyle },
+    { "cs", comment_styles.cstyle },
+    { "swift", comment_styles.cstyle },
+    { "kt", comment_styles.cstyle },
+    { "sc", comment_styles.cstyle },
+    { "go", comment_styles.cstyle },
+    { "rs", comment_styles.cstyle },
+    { "groovy", comment_styles.cstyle },
+    { "gvy", comment_styles.cstyle },
+    { "gy", comment_styles.cstyle },
+    { "gsh", comment_styles.cstyle },
+    { "dart", comment_styles.cstyle },
+    { "yml", comment_styles.hash },
+    { "yaml", comment_styles.hash },
+    { "robot", comment_styles.hash },
+    { "r", comment_styles.hash },
+    { "lua", comment_styles.lua },
+    { "html", comment_styles.html },
+    { "hs", comment_styles.haskell },
+    { "lhs", comment_styles.haskell },
+    { "rb", comment_styles.ruby },
+    { "pl", comment_styles.ruby },
+    { "coffee", comment_styles.coffee },
+}
 
-M.yml = make_language(comment_styles.hash)
-M.yaml = make_language(comment_styles.hash)
-
-M.robot = make_language(comment_styles.hash)
-M.r = make_language(comment_styles.hash)
-
-M.lua = make_language(comment_styles.lua)
-
-M.html = make_language(comment_styles.html)
-
-M.hs = make_language(comment_styles.haskell)
-M.lhs = make_language(comment_styles.haskell)
-
-M.rb = make_language(comment_styles.ruby)
-M.pl = make_language(comment_styles.ruby)
-
-M.coffee = make_language(comment_styles.coffee)
+for _, lang in ipairs(simple_languages) do
+    M[lang[1]] = make_language(lang[2])
+end
 
 M.php = make_language(comment_styles.cstyle, function(lines)
     for i, line in ipairs(lines) do
