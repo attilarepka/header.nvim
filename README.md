@@ -215,6 +215,11 @@ For most languages, headers are inserted at the top of the file (or after existi
 - Groovy
 - CoffeeScript
 - R
+- CSS
+- SQL
+- TOML
+- Dockerfiles
+- Markdown
 
 ---
 
