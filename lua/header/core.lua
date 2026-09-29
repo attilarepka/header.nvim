@@ -14,7 +14,7 @@ local function resolve_language()
     end
     -- Fallback: try filetype
     local ft = vim.bo.filetype
-    lang_fn = languages[ft]
+    lang_fn = languages.filetypes[ft] or languages[ft]
     if not lang_fn then
         return nil
     end
@@ -70,6 +70,7 @@ local function resolve_header_setup()
     return {
         lang = lang,
         insert_line = placement.insert_line,
+        comment_style = placement.comment_style or lang.comment_style,
     }
 end
 
@@ -78,8 +79,8 @@ local function insert_rendered_header(setup, hdrs, header)
         return
     end
 
-    remove_old_headers(setup.lang.comment_style, setup.insert_line)
-    local rendered = renderer.render_header(hdrs, setup.lang.comment_style, header.config.use_block_header)
+    remove_old_headers(setup.comment_style, setup.insert_line)
+    local rendered = renderer.render_header(hdrs, setup.comment_style, header.config.use_block_header)
     vim.api.nvim_buf_set_lines(0, setup.insert_line, setup.insert_line, false, rendered)
 end
 
