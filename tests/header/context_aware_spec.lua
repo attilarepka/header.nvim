@@ -153,6 +153,40 @@ describe("context_aware languages", function()
             assert.is_true(buffer[2]:match("^#") ~= nil)
             assert.are.equal("import os", buffer[#buffer])
         end)
+
+        it("should support Dockerfiles without a file extension", function()
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, { "FROM alpine" })
+            vim.api.nvim_buf_set_name(0, "Dockerfile")
+            vim.bo.filetype = "dockerfile"
+            header.setup({
+                file_name = true,
+                date_created = false,
+                date_modified = false,
+            })
+
+            header.add_header()
+
+            local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+            assert.is_true(buffer[1]:match("^#") ~= nil)
+            assert.are.equal("FROM alpine", buffer[#buffer])
+        end)
+
+        it("should use HTML comments for Markdown filetypes without a recognized extension", function()
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, { "# Title" })
+            vim.api.nvim_buf_set_name(0, "document.unknown")
+            vim.bo.filetype = "markdown"
+            header.setup({
+                file_name = true,
+                date_created = false,
+                date_modified = false,
+            })
+
+            header.add_header()
+
+            local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+            assert.are.equal("<!--", buffer[1])
+            assert.are.equal("# Title", buffer[#buffer])
+        end)
     end)
 
     describe("php with opening tag", function()

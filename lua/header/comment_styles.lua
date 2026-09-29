@@ -10,6 +10,11 @@ M.hash = {
     line = { start = nil, line = "#", ["end"] = nil },
 }
 
+M.sql = {
+    block = nil,
+    line = { start = nil, line = "--", ["end"] = nil },
+}
+
 M.lua = {
     block = { start = "--[[", line = "--", ["end"] = "--]]" },
     line = { start = nil, line = "--", ["end"] = nil },
