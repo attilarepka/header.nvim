@@ -132,6 +132,29 @@ describe("context_aware languages", function()
         end)
     end)
 
+    describe("filetype aliases", function()
+        it("should use the Python handler when only the filetype identifies the language", function()
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {
+                "#!/usr/bin/env python3",
+                "import os",
+            })
+            vim.api.nvim_buf_set_name(0, "script.unknown")
+            vim.bo.filetype = "python"
+            header.setup({
+                file_name = true,
+                date_created = false,
+                date_modified = false,
+            })
+
+            header.add_header()
+
+            local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+            assert.are.equal("#!/usr/bin/env python3", buffer[1])
+            assert.is_true(buffer[2]:match("^#") ~= nil)
+            assert.are.equal("import os", buffer[#buffer])
+        end)
+    end)
+
     describe("php with opening tag", function()
         it("should insert header after <?php tag", function()
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
@@ -164,7 +187,7 @@ describe("context_aware languages", function()
             assert.are.equal("echo 'hello';", buffer[#buffer])
         end)
 
-        it("should insert header at top if no <?php tag", function()
+        it("should use an HTML comment at the top if no PHP opening tag exists", function()
             vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
             local file_name = "index.php"
             vim.fn.setline(1, file_name)
@@ -190,7 +213,8 @@ describe("context_aware languages", function()
 
             local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-            assert.is_true(buffer[1]:match("^/") ~= nil)
+            assert.are.equal("<!--", buffer[1])
+            assert.are.equal("-->", buffer[#buffer - 3])
             assert.are.equal("<!DOCTYPE html>", buffer[#buffer - 1])
         end)
     end)

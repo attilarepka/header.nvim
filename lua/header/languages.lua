@@ -58,7 +58,7 @@ M.php = make_language(comment_styles.cstyle, function(lines)
             return { ok = true, insert_line = i }
         end
     end
-    return { ok = true, insert_line = 0 }
+    return { ok = true, insert_line = 0, comment_style = comment_styles.html }
 end)
 
 M.sh = make_language(comment_styles.hash, function(lines)
@@ -79,5 +79,21 @@ M.py = make_language(comment_styles.hash, function(lines)
     end
     return { ok = true, insert_line = insert_line }
 end)
+
+M.filetypes = {
+    bash = M.sh,
+    csharp = M.cs,
+    haskell = M.hs,
+    javascript = M.js,
+    javascriptreact = M.tsx,
+    kotlin = M.kt,
+    perl = M.pl,
+    python = M.py,
+    ruby = M.rb,
+    scala = M.sc,
+    typescript = M.ts,
+    typescriptreact = M.tsx,
+    zsh = M.sh,
+}
 
 return M

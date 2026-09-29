@@ -261,6 +261,7 @@ echo "Hello";
 ```
 
 If no opening tag exists, the header is placed at the top of the file.
+In that case, an HTML comment is used so the header remains valid before HTML content.
 
 ---
 
