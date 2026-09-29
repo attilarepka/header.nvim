@@ -18,6 +18,16 @@
 
 - Neovim 0.8+
 
+## Running Tests
+
+Run the test suite with:
+
+```sh
+make test
+```
+
+The test setup uses [plenary.nvim](https://github.com/nvim-lua/plenary.nvim).
+
 ## Installing
 
 with [packer.nvim](https://github.com/wbthomason/packer.nvim)
